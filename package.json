@@ -4,9 +4,12 @@
   "version": "1.0.0",
   "scripts": {
     "start": "expo start",
+    "prebuild": "expo prebuild",
+    "prebuild:clean": "expo prebuild --clean",
     "android": "DARK_MODE=media expo start --android",
     "ios": "DARK_MODE=media expo start --ios",
     "web": "DARK_MODE=media expo start --web",
+    "ios:device": "expo run:ios --device",
     "test": "jest --watchAll",
     "lint": "expo lint"
   },

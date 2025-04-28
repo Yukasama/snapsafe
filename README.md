@@ -1,36 +1,34 @@
-# Welcome to your Expo app 👋
-
-This is an [Expo](https://expo.dev) project created with [`create-gluestack-app`](https://www.npmjs.com/package/create-gluestack).
-
-## Get started
+# Get started
 
 1. Start the app
 
-   ```bash
-    npm run start
+   ```shell
+   npm install
    ```
 
-In the output, you'll find options to open the app in a
+2. Start the app
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+   ```shell
+    npx expo start
+   ```
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## Building for dev
 
-## Learn more
+  1. Run prebuild to build an native app for android and ios. It will create an android and an ios folder.
 
-To learn more about developing your project with Expo, look at the following resources:
+  ```**shell**
+  npm run prebuild
+  ```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-- [Nativewind](https://www.nativewind.dev/): Nativewind is a utility-first library for building native apps with Tailwind CSS.
-- [Gluestack](https://gluestack.io/): Gluestack is a component library for building native apps with Tailwind CSS.
+  For iOS, this will only work on an Apple machine, you will need XCode to compile to an native iOS app:
 
-## Join the community
+  ```shell
+  npm run ios
+  ```
 
-Join our community of developers creating universal apps.
+  For Android, you will need android studios to compile to an native android app:
+  ```shell
+  npm run android
+  ```
 
-- [gluestack-ui on GitHub](https://github.com/gluestack/gluestack-ui): View our open source ui library and contribute.
-- [gluestack community](https://discord.com/channels/1050761204852858900/1336392784168484914): Chat with gluestack users and ask questions.
+  2. Crtl + Cmd + z for dev debugging
