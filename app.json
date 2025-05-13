@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "snapsafe",
-    "slug": "snapsafe",
+    "name": "test-expo",
+    "slug": "test-expo",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
