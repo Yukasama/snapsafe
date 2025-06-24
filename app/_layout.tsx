@@ -1,16 +1,11 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from "@react-navigation/native";
+import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import { useColorScheme } from "@/components/useColorScheme";
-import { Slot } from "expo-router";
-
+import { Stack } from "expo-router";
 import "../global.css";
 
 export {
@@ -61,7 +56,23 @@ function RootLayoutNav() {
   return (
     <GluestackUIProvider mode={colorScheme === "dark" ? "dark" : "light"}>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <Slot />
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            animation: "slide_from_right",
+            gestureEnabled: true,
+            gestureDirection: "horizontal",
+          }}
+        >
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="camera/index" options={{ headerShown: false, animation: "slide_from_right" }} />
+          <Stack.Screen name="edit-photo/index" options={{ headerShown: false, animation: "slide_from_right" }} />
+          <Stack.Screen name="select-contacts/index" options={{ headerShown: false, animation: "slide_from_right" }} />
+          <Stack.Screen name="chat/[id]" options={{ headerShown: false, animation: "slide_from_right" }} />
+          <Stack.Screen name="settings/index" options={{ headerShown: false, animation: "slide_from_bottom" }} />
+          <Stack.Screen name="shop/index" options={{ headerShown: false, animation: "slide_from_right" }} />
+          <Stack.Screen name="+not-found" />
+        </Stack>
       </ThemeProvider>
     </GluestackUIProvider>
   );
