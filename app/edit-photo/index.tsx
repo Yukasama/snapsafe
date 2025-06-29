@@ -65,15 +65,20 @@ export default function PhotoEditorScreen() {
       sc.value = sticker.scale;
     }, [sticker]);
 
+    const offset = React.useRef({ x: 0, y: 0 });
     const pan = Gesture.Pan()
       .minDistance(0)
-      .onBegin(() => {
+      .onBegin((e) => {
         sc.value = withSpring(sticker.scale * 1.2);
         runOnJS(setOverTrashGlobal)(false);
+        offset.current = {
+          x: e.absoluteX - tx.value,
+          y: e.absoluteY - ty.value,
+        };
       })
       .onUpdate((e) => {
-        const x = e.absoluteX - 30;
-        const y = e.absoluteY - HEADER_HEIGHT - 30;
+        const x = e.absoluteX - offset.current.x;
+        const y = e.absoluteY - offset.current.y;
         tx.value = x;
         ty.value = y;
 
@@ -92,8 +97,8 @@ export default function PhotoEditorScreen() {
         if (!stillExists) return;
 
         const photoH = height - HEADER_HEIGHT - BOTTOM_CONTROLS_HEIGHT;
-        const finalX = e.absoluteX - 30;
-        const finalY = e.absoluteY - HEADER_HEIGHT - 30;
+        const finalX = e.absoluteX - offset.current.x;
+        const finalY = e.absoluteY - offset.current.y;
         const x = Math.max(0, Math.min(width - 60, finalX));
         const y = Math.max(0, Math.min(photoH - 60, finalY));
 

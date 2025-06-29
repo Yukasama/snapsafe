@@ -65,7 +65,7 @@ export default function SettingsScreen() {
                 <Text className="text-typography-white font-medium text-lg mb-2">Name</Text>
                 <Box className="bg-background-800 rounded-lg p-4 flex-row items-center">
                   <TextInput
-                    className="flex-1 text-typography-white text-base"
+                    className="flex-1 text-typography-white text-base outline-none"
                     value={name}
                     onChangeText={setName}
                     placeholder="Enter your name"
