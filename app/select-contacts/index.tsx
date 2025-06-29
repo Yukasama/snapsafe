@@ -2,11 +2,9 @@ import React, { useState } from "react";
 import { Box } from "@/components/ui/box";
 import { Text } from "@/components/ui/text";
 import { TouchableOpacity, ScrollView, Alert } from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { router, useLocalSearchParams, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
 
-// Mock contacts (using the same data as chat contacts)
 const contacts = [
   { id: 1, name: "John Doe", avatar: "👨‍💼" },
   { id: 2, name: "Sarah Wilson", avatar: "👩‍🎨" },
@@ -28,7 +26,6 @@ const ContactItem = ({
   return (
     <TouchableOpacity onPress={onToggle}>
       <Box className="flex-row items-center p-4 border-b border-outline-700">
-        {/* Checkbox */}
         <Box
           className={`w-6 h-6 rounded-full border-2 items-center justify-center mr-3 ${
             isSelected ? "bg-blue-500 border-blue-500" : "border-typography-400"
@@ -37,12 +34,10 @@ const ContactItem = ({
           {isSelected && <Text className="text-white text-xs font-bold">✓</Text>}
         </Box>
 
-        {/* Avatar */}
         <Box className="w-12 h-12 rounded-full bg-background-200 items-center justify-center mr-3">
           <Text className="text-2xl">{contact.avatar}</Text>
         </Box>
 
-        {/* Name */}
         <Text className="text-typography-white font-medium text-lg">{contact.name}</Text>
       </Box>
     </TouchableOpacity>
@@ -73,7 +68,6 @@ export default function ContactSelectionScreen() {
       return;
     }
 
-    // Navigate directly to home after sending (simulating successful send)
     navigation.replace("/");
   };
 
@@ -82,25 +76,24 @@ export default function ContactSelectionScreen() {
   return (
     <SafeAreaView className="flex-1 bg-black">
       <Box className="flex-1">
-        {/* Header */}
         <Box className="flex-row justify-between items-center p-4 border-b border-outline-700">
-          <TouchableOpacity onPress={() => navigation.back()}>
-            <Ionicons name="arrow-back" size={24} color="white" />
+          <TouchableOpacity onPress={() => router.back()}>
+            <Box className="w-10 h-10 bg-black/50 rounded-full items-center justify-center">
+              <Text className="text-white text-xl">←</Text>
+            </Box>
           </TouchableOpacity>
           <Text className="text-white font-bold text-lg">Send To</Text>
           <TouchableOpacity onPress={selectAll}>
-            <Text className="text-blue-500 text-lg">{allSelected ? "Deselect All" : "Select All"}</Text>
+            <Text className="text-blue-500 text-md">{allSelected ? "Deselect All" : "Select All"}</Text>
           </TouchableOpacity>
         </Box>
 
-        {/* Selected count */}
         <Box className="px-4 py-2 bg-background-800">
           <Text className="text-typography-400 text-sm">
             {selectedContacts.length} of {contacts.length} contacts selected
           </Text>
         </Box>
 
-        {/* Contact list */}
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
           {contacts.map((contact) => (
             <ContactItem
@@ -112,7 +105,6 @@ export default function ContactSelectionScreen() {
           ))}
         </ScrollView>
 
-        {/* Send button */}
         <Box className="p-4 border-t border-outline-700">
           <TouchableOpacity
             onPress={handleSend}

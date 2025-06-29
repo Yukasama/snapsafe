@@ -4,48 +4,9 @@ import { ScrollView, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform
 import { Text } from "@/components/ui/text";
 import { useLocalSearchParams, router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { mockChats } from "@/config/mock-chats";
 
-// Mock chat data - should match the data from index.tsx
-const mockChats = [
-  {
-    id: 1,
-    name: "John Doe",
-    avatar: "👨‍💼",
-    isOnline: true,
-  },
-  {
-    id: 2,
-    name: "Sarah Wilson",
-    avatar: "👩‍🎨",
-    isOnline: true,
-  },
-  {
-    id: 3,
-    name: "Team Group",
-    avatar: "👥",
-    isOnline: false,
-  },
-  {
-    id: 4,
-    name: "Mom",
-    avatar: "👩‍🦳",
-    isOnline: false,
-  },
-  {
-    id: 5,
-    name: "Alex Johnson",
-    avatar: "👨‍💻",
-    isOnline: false,
-  },
-  {
-    id: 6,
-    name: "Emma Davis",
-    avatar: "👩‍🦰",
-    isOnline: true,
-  },
-];
-
-// Mock messages for the chat
 const mockMessages = [
   {
     id: 1,
@@ -99,8 +60,6 @@ const MessageBubble = ({ message }: { message: (typeof mockMessages)[0] }) => {
 export default function ChatScreen() {
   const { id } = useLocalSearchParams();
   const [message, setMessage] = useState("");
-
-  // Find the chat data based on the ID
   const chat = mockChats.find((c) => c.id === parseInt(id as string));
 
   if (!chat) {
@@ -113,7 +72,6 @@ export default function ChatScreen() {
 
   const sendMessage = () => {
     if (message.trim()) {
-      // Here you would normally send the message to your backend
       console.log("Sending message:", message);
       setMessage("");
     }
@@ -144,20 +102,19 @@ export default function ChatScreen() {
             </Box>
 
             <Box className="flex-row gap-4">
-              <TouchableOpacity>
-                <Text className="text-typography-white text-xl">📞</Text>
+              <TouchableOpacity className="mr-0.5">
+                <Ionicons name="call-outline" size={24} color="#fff" />
               </TouchableOpacity>
               <TouchableOpacity>
-                <Text className="text-typography-white text-xl">📹</Text>
+                <Ionicons name="videocam-outline" size={24} color="#fff" />
               </TouchableOpacity>
               <TouchableOpacity>
-                <Text className="text-typography-white text-xl">⋮</Text>
+                <MaterialCommunityIcons name="dots-vertical" className="-space-y-0.5" size={24} color="#fff" />
               </TouchableOpacity>
             </Box>
           </Box>
         </Box>
 
-        {/* Messages */}
         <ScrollView
           className="flex-1 px-4 py-2"
           showsVerticalScrollIndicator={false}
@@ -168,31 +125,35 @@ export default function ChatScreen() {
           ))}
         </ScrollView>
 
-        {/* Message Input */}
         <Box className="bg-black px-4 py-3 border-t border-outline-700">
-          <Box className="flex-row items-center">
-            <TouchableOpacity className="mr-3">
-              <Text className="text-typography-white text-xl">📎</Text>
+          <Box className="flex-row items-end gap-2">
+            <TouchableOpacity className="mr-1.5 mb-1.5">
+              <Ionicons name="attach" size={26} color="#aaa" />
             </TouchableOpacity>
 
-            <Box className="flex-1 bg-background-800 rounded-full px-4 py-2 flex-row items-center">
+            <Box className="flex-1 flex-row items-center bg-background-800 rounded-full px-3" style={{ minHeight: 40 }}>
               <TextInput
-                className="flex-1 text-typography-white text-base"
+                className="flex-1 text-typography-white text-base outline-none h-[29px]"
                 placeholder="Type a message..."
                 placeholderTextColor="#666"
                 value={message}
                 onChangeText={setMessage}
                 multiline
                 maxLength={1000}
+                style={{
+                  paddingVertical: 1,
+                  textAlignVertical: "center",
+                }}
               />
               <TouchableOpacity className="ml-2">
-                <Text className="text-typography-white text-xl">😊</Text>
+                <Ionicons name="happy-outline" size={26} color="#aaa" />
               </TouchableOpacity>
             </Box>
 
-            <TouchableOpacity className="ml-3" onPress={sendMessage}>
+            {/* Send button */}
+            <TouchableOpacity className="ml-1.5" onPress={sendMessage}>
               <Box className="w-10 h-10 bg-blue-500 rounded-full items-center justify-center">
-                <Text className="text-white text-lg">→</Text>
+                <Ionicons name="send" size={22} color="#fff" />
               </Box>
             </TouchableOpacity>
           </Box>

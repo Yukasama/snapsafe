@@ -94,7 +94,6 @@ const stickerPacks: StickerPack[] = [
 const StickerPackCard = ({ pack, onPurchase }: { pack: StickerPack; onPurchase: (pack: StickerPack) => void }) => {
   return (
     <Box className="bg-background-800 rounded-xl p-4 mb-4 border border-outline-700">
-      {/* Header */}
       <Box className="flex-row items-center justify-between mb-3">
         <Box className="flex-row items-center">
           <Text className="text-4xl mr-3">{pack.emoji}</Text>
@@ -108,10 +107,8 @@ const StickerPackCard = ({ pack, onPurchase }: { pack: StickerPack; onPurchase: 
         </Box>
       </Box>
 
-      {/* Description */}
       <Text className="text-typography-400 text-base mb-3">{pack.description}</Text>
 
-      {/* Sticker Preview */}
       <Box className="flex-row flex-wrap mb-4">
         {pack.stickers.slice(0, 6).map((sticker, index) => (
           <Text key={index} className="text-2xl mr-2 mb-1">
@@ -123,7 +120,6 @@ const StickerPackCard = ({ pack, onPurchase }: { pack: StickerPack; onPurchase: 
         )}
       </Box>
 
-      {/* Purchase Button */}
       <TouchableOpacity onPress={() => onPurchase(pack)} activeOpacity={0.8}>
         <Box className="bg-blue-500 rounded-lg py-3 items-center">
           <Text className="text-white font-bold text-base">Purchase {pack.price}</Text>
@@ -157,7 +153,6 @@ export default function ShopScreen() {
   return (
     <SafeAreaView className="flex-1 bg-black">
       <Box className="flex-1">
-        {/* Header */}
         <Box className="flex-row justify-between items-center p-4 border-b border-outline-700">
           <TouchableOpacity onPress={() => router.back()}>
             <Ionicons name="arrow-back" size={24} color="white" />
@@ -166,7 +161,6 @@ export default function ShopScreen() {
           <Box className="w-6" />
         </Box>
 
-        {/* Category Filter */}
         <Box className="px-4 py-3">
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <Box className="flex-row gap-2">
@@ -191,19 +185,16 @@ export default function ShopScreen() {
           </ScrollView>
         </Box>
 
-        {/* Shop Header */}
         <Box className="px-4 py-2">
           <Text className="text-typography-white text-2xl font-bold">Premium Stickers</Text>
           <Text className="text-typography-400 text-base">Enhance your photos with exclusive sticker packs</Text>
         </Box>
 
-        {/* Sticker Packs */}
         <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
           {filteredPacks.map((pack) => (
             <StickerPackCard key={pack.id} pack={pack} onPurchase={handlePurchase} />
           ))}
 
-          {/* Footer */}
           <Box className="py-8 items-center">
             <Text className="text-typography-400 text-sm text-center">
               All purchases are processed securely.{"\n"}

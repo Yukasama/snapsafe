@@ -34,7 +34,6 @@ export default function SettingsScreen() {
   return (
     <SafeAreaView className="flex-1 bg-black">
       <Box className="flex-1">
-        {/* Header */}
         <Box className="flex-row justify-between items-center p-4 border-b border-outline-700">
           <TouchableOpacity onPress={() => router.back()}>
             <Ionicons name="arrow-back" size={24} color="white" />
@@ -43,14 +42,10 @@ export default function SettingsScreen() {
           <Box className="w-6" />
         </Box>
 
-        {/* Content */}
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
           <Box className="p-4">
-            {/* Profile Section */}
             <Box className="mb-8">
               <Text className="text-typography-white font-bold text-xl mb-4">Profile</Text>
-
-              {/* Profile Picture */}
               <Box className="items-center mb-6">
                 <Box className="w-24 h-24 rounded-full bg-blue-500 items-center justify-center mb-3">
                   <Text className="text-white text-3xl font-bold">
@@ -66,7 +61,6 @@ export default function SettingsScreen() {
                 </TouchableOpacity>
               </Box>
 
-              {/* Name Input */}
               <Box className="mb-4">
                 <Text className="text-typography-white font-medium text-lg mb-2">Name</Text>
                 <Box className="bg-background-800 rounded-lg p-4 flex-row items-center">
@@ -83,7 +77,6 @@ export default function SettingsScreen() {
                 </Box>
               </Box>
 
-              {/* Phone Number (Read-only) */}
               <Box className="mb-6">
                 <Text className="text-typography-white font-medium text-lg mb-2">Phone Number</Text>
                 <Box className="bg-background-800 rounded-lg p-4">
@@ -93,7 +86,6 @@ export default function SettingsScreen() {
               </Box>
             </Box>
 
-            {/* Appearance Section */}
             <Box className="mb-8">
               <Text className="text-typography-white font-bold text-xl mb-4">Appearance</Text>
               <ThemeOption mode="light" label="Light Mode" />
@@ -101,7 +93,6 @@ export default function SettingsScreen() {
               <ThemeOption mode="system" label="System (Auto)" />
             </Box>
 
-            {/* Other Settings */}
             <Box>
               <Text className="text-typography-white font-bold text-xl mb-4">Other</Text>
 
