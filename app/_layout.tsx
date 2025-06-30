@@ -7,6 +7,8 @@ import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import { useColorScheme } from "@/components/useColorScheme";
 import { Stack } from "expo-router";
 import "../global.css";
+import { withOptions } from "tailwindcss/plugin";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -54,26 +56,28 @@ function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
   return (
-    <GluestackUIProvider mode={colorScheme === "dark" ? "dark" : "light"}>
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <Stack
-          screenOptions={{
-            headerShown: false,
-            animation: "slide_from_right",
-            gestureEnabled: true,
-            gestureDirection: "horizontal",
-          }}
-        >
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="camera/index" options={{ headerShown: false, animation: "slide_from_right" }} />
-          <Stack.Screen name="edit-photo/index" options={{ headerShown: false, animation: "slide_from_right" }} />
-          <Stack.Screen name="select-contacts/index" options={{ headerShown: false, animation: "slide_from_right" }} />
-          <Stack.Screen name="chat/[id]" options={{ headerShown: false, animation: "slide_from_right" }} />
-          <Stack.Screen name="settings/index" options={{ headerShown: false, animation: "slide_from_bottom" }} />
-          <Stack.Screen name="shop/index" options={{ headerShown: false, animation: "slide_from_right" }} />
-          <Stack.Screen name="+not-found" />
-        </Stack>
-      </ThemeProvider>
-    </GluestackUIProvider>
+    <GestureHandlerRootView className="flex-1">
+      <GluestackUIProvider mode={colorScheme === "dark" ? "dark" : "light"}>
+        <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              animation: "slide_from_right",
+              gestureEnabled: true,
+              gestureDirection: "horizontal",
+            }}
+          >
+            <Stack.Screen name="index" options={{ headerShown: false }} />
+            <Stack.Screen name="camera/index" options={{ headerShown: false, animation: "slide_from_right" }} />
+            <Stack.Screen name="edit-photo/index" options={{ headerShown: false, animation: "slide_from_right" }} />
+            <Stack.Screen name="select-contacts/index" options={{ headerShown: false, animation: "slide_from_right" }} />
+            <Stack.Screen name="chat/[id]" options={{ headerShown: false, animation: "slide_from_right" }} />
+            <Stack.Screen name="settings/index" options={{ headerShown: false, animation: "slide_from_bottom" }} />
+            <Stack.Screen name="shop/index" options={{ headerShown: false, animation: "slide_from_right" }} />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+        </ThemeProvider>
+      </GluestackUIProvider>
+    </GestureHandlerRootView>
   );
 }
