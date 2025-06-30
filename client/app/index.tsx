@@ -7,6 +7,11 @@ import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { ChatItem } from "@/components/ChatItem";
 import { mockChats } from "@/config/mock-chats";
+import { useMessagePolling } from "@/hooks/useMessagePolling";
+import { getLatestEncryptedMessages } from "@/api/backend";
+import { config } from "@/config/config";
+import { decryptImage } from "@/crypto/decryptImage";
+import { loadOrCreateRSAKeyPair } from "@/crypto/keyManager";
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -15,6 +20,28 @@ export default function Home() {
   const [chats, setChats] = useState(mockChats);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const router = useRouter();
+
+  useMessagePolling(async () => {
+    const messages = await getLatestEncryptedMessages(config.username);
+    if (!messages || messages.length === 0) return;
+    const pair = await loadOrCreateRSAKeyPair();
+    const privateKey = pair.privateKey;
+    for (const message of messages) {
+      console.debug("Decrypting message");
+      const decryptedMessage = await decryptImage(
+        message.image,
+        message.encryptedKey,
+        message.iv,
+        privateKey
+      )
+      router.push({
+        pathname: "/view-photo",
+        params: {
+          base64Image: decryptedMessage,
+        },
+      });
+    }
+  })
 
   const filteredChats = useMemo(() => {
     if (!searchQuery.trim()) return chats;

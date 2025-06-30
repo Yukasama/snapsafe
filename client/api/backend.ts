@@ -1,4 +1,5 @@
 import { config } from "@/config/config";
+import { JWK } from "react-native-quick-crypto/lib/typescript/src/keys";
 
 const baseUrl = config.backendBaseUrl;
 
@@ -6,11 +7,11 @@ const baseUrl = config.backendBaseUrl;
 
 export interface PublicKeyUploadRequest {
   userId: string;
-  publicKey: string;
+  publicKey: JsonWebKey;
 }
 
 export interface PublicKeyResponse {
-  publicKey: string;
+  publicKey: JsonWebKey;
 }
 
 export interface EncryptedImageRequest {
@@ -44,7 +45,11 @@ export async function getPublicKey(userId: string): Promise<PublicKeyResponse> {
   console.debug("Fetching public key for user:", userId);
   const res = await fetch(`${baseUrl}/keys/${userId}`);
   if (!res.ok) throw new Error("Public key not found");
-  return await res.json();
+  const data = await res.json();
+
+  return {
+    publicKey: JSON.parse(data.publicKey) as JsonWebKey,
+  } as PublicKeyResponse;
 }
 
 export async function sendEncryptedImage(data: EncryptedImageRequest): Promise<void> {
@@ -56,9 +61,11 @@ export async function sendEncryptedImage(data: EncryptedImageRequest): Promise<v
   });
 }
 
-export async function getLatestEncryptedMessage(recipientId: string): Promise<EncryptedMessageResponse> {
+export async function getLatestEncryptedMessages(recipientId: string): Promise<EncryptedMessageResponse[]> {
   console.debug("Fetching latest encrypted message for recipient:", recipientId);
   const res = await fetch(`${baseUrl}/messages/${recipientId}`);
   if (!res.ok) throw new Error("No messages found");
-  return await res.json();
+  const messages = await res.json();
+  console.debug("Received messages:", messages.length);
+  return messages as EncryptedMessageResponse[];
 }

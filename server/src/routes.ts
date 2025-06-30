@@ -20,15 +20,14 @@ interface MessageRow {
 router.post("/keys", (req: Request, res: Response): void => {
   console.debug("Received request to upload public key");
   const { userId, publicKey } = req.body;
+  console.debug(`User ID: ${userId}, Public Key: ${JSON.stringify(publicKey)}`);
   if (!userId || !publicKey) {
     console.error("Missing userId or publicKey in request body");
     res.status(400).json({ error: "Missing fields" });
     return;
   }
 
-  const stmt = db.prepare(
-    "INSERT OR REPLACE INTO users (username, public_key) VALUES (?, ?)",
-  );
+  const stmt = db.prepare("INSERT OR REPLACE INTO users (username, public_key) VALUES (?, ?)");
   stmt.run(userId, JSON.stringify(publicKey));
   res.status(201).json({ success: true });
   console.debug(`Public key for user ${userId} stored successfully`);
@@ -37,14 +36,14 @@ router.post("/keys", (req: Request, res: Response): void => {
 // Fetch a public key by user ID
 router.get("/keys/:userId", (req: Request, res: Response): void => {
   console.debug(`Fetching public key for user: ${req.params.userId}`);
-  const row = db
-    .prepare("SELECT public_key FROM users WHERE username = ?")
-    .get(req.params.userId) as PublicKeyRow | undefined;
+  const row = db.prepare("SELECT public_key FROM users WHERE username = ?").get(req.params.userId) as
+    | PublicKeyRow
+    | undefined;
   if (!row) {
+    console.debug(`No public key found for user ${req.params.userId}`);
     res.status(404).json({ error: "User not found" });
     return;
   }
-
   res.json({ publicKey: row.public_key });
 });
 
@@ -62,38 +61,43 @@ router.post("/messages", (req: Request, res: Response): void => {
     VALUES (?, ?, ?, ?, ?)
   `);
 
-  stmt.run(
-    senderId,
-    recipientId,
-    Buffer.from(encryptedKey, "base64"),
-    iv,
-    Buffer.from(image, "base64"),
-  );
+  stmt.run(senderId, recipientId, Buffer.from(encryptedKey, "base64"), iv, Buffer.from(image, "base64"));
 
   res.json({ success: true });
 });
 
 // Fetch most recent message for recipient
 router.get("/messages/:recipientId", (req: Request, res: Response): void => {
-  console.debug(
-    `Fetching most recent message for recipient: ${req.params.recipientId}`,
-  );
-  const stmt = db.prepare(
-    "SELECT * FROM messages WHERE recipient_id = ? ORDER BY timestamp DESC LIMIT 1",
-  );
-  const msg = stmt.get(req.params.recipientId) as MessageRow | undefined;
-  if (!msg) {
+  console.debug(`Fetching most recent message for recipient: ${req.params.recipientId}`);
+
+  const stmt = db.prepare("SELECT * FROM messages WHERE recipient_id = ? ORDER BY timestamp DESC");
+  const messages = stmt.all(req.params.recipientId) as MessageRow[] | undefined;
+  console.debug(`Messages fetched: ${typeof messages}`);
+  if (!messages || messages.length === 0) {
     res.status(404).json({ error: "No messages" });
     return;
   }
 
-  res.json({
-    from: msg.sender_id,
-    iv: msg.iv,
-    encryptedKey: Buffer.from(msg.encrypted_key).toString("base64"),
-    image: Buffer.from(msg.image).toString("base64"),
-    timestamp: msg.timestamp,
-  });
+  console.debug(`Found ${messages.length} messages for recipient ${req.params.recipientId}`);
+
+  // Delete messages after fetching
+  const deleteStmt = db.prepare("DELETE FROM messages WHERE recipient_id = ?");
+  deleteStmt.run(req.params.recipientId);
+
+  console.debug(`Deleted messages for recipient ${req.params.recipientId}`);
+
+  const result_messages = [];
+  for (const msg of messages) {
+    result_messages.push({
+      from: msg.sender_id,
+      iv: msg.iv,
+      encryptedKey: Buffer.from(msg.encrypted_key).toString("base64"),
+      image: Buffer.from(msg.image).toString("base64"),
+      timestamp: msg.timestamp,
+    });
+  }
+
+  res.json(result_messages);
 });
 
 export default router;

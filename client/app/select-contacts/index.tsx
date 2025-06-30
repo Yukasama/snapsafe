@@ -106,7 +106,6 @@ export default function ContactSelectionScreen() {
         });
       }
 
-      Alert.alert("Success", `Image sent to ${selectedContacts.length} contact(s)`);
       navigation.replace("/");
     } catch (err) {
       console.error("Send failed:", err);
