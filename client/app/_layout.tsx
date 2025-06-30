@@ -1,3 +1,4 @@
+import 'react-native-get-random-values';
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { useFonts } from "expo-font";
@@ -7,8 +8,8 @@ import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import { useColorScheme } from "@/components/useColorScheme";
 import { Stack } from "expo-router";
 import "../global.css";
-import { withOptions } from "tailwindcss/plugin";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { initCrypto } from "@/crypto/initCrypto";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -24,6 +25,11 @@ export {
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    initCrypto().then(() => setReady(true)).catch(console.error);
+  }, []);
+
   const [loaded, error] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
     ...FontAwesome.font,
@@ -40,6 +46,8 @@ export default function RootLayout() {
       SplashScreen.hideAsync();
     }
   }, [loaded]);
+
+  if (!ready) return null; // or splash/loading
 
   // useLayoutEffect(() => {
   //   setStyleLoaded(true);

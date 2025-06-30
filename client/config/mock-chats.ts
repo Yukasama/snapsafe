@@ -1,12 +1,15 @@
+import { config } from "./config";
+
 export const mockChats = [
   {
     id: 1,
-    name: "John Doe",
-    lastMessage: "Hey, how are you doing?",
+    name: "Note to Self",
+    lastMessage: "Buy groceries and pick up dry cleaning",
     timestamp: "2m ago",
-    unreadCount: 2,
+    unreadCount: 0,
     avatar: "👨‍💼",
     isOnline: true,
+    username: config.username,
   },
   {
     id: 2,
@@ -16,6 +19,7 @@ export const mockChats = [
     unreadCount: 0,
     avatar: "👩‍🎨",
     isOnline: true,
+    username: "",
   },
   {
     id: 3,
@@ -25,6 +29,7 @@ export const mockChats = [
     unreadCount: 5,
     avatar: "👥",
     isOnline: false,
+    username: "",
   },
   {
     id: 4,
@@ -34,6 +39,7 @@ export const mockChats = [
     unreadCount: 1,
     avatar: "👩‍🦳",
     isOnline: false,
+    username: "",
   },
   {
     id: 5,
@@ -43,6 +49,7 @@ export const mockChats = [
     unreadCount: 0,
     avatar: "👨‍💻",
     isOnline: false,
+    username: "",
   },
   {
     id: 6,
@@ -52,5 +59,6 @@ export const mockChats = [
     unreadCount: 0,
     avatar: "👩‍🦰",
     isOnline: true,
+    username: "",
   },
 ];

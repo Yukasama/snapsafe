@@ -6,63 +6,7 @@ import { Link } from "expo-router";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { ChatItem } from "@/components/ChatItem";
-
-export const mockChats = [
-  {
-    id: 1,
-    name: "John Doe",
-    lastMessage: "Hey, how are you doing?",
-    timestamp: "2m ago",
-    unreadCount: 2,
-    avatar: "👨‍💼",
-    isOnline: true,
-  },
-  {
-    id: 2,
-    name: "Sarah Wilson",
-    lastMessage: "Can we meet tomorrow?",
-    timestamp: "5m ago",
-    unreadCount: 0,
-    avatar: "👩‍🎨",
-    isOnline: true,
-  },
-  {
-    id: 3,
-    name: "Team Group",
-    lastMessage: "Mike: Great work everyone!",
-    timestamp: "1h ago",
-    unreadCount: 5,
-    avatar: "👥",
-    isOnline: false,
-  },
-  {
-    id: 4,
-    name: "Mom",
-    lastMessage: "Don't forget dinner at 7pm",
-    timestamp: "2h ago",
-    unreadCount: 1,
-    avatar: "👩‍🦳",
-    isOnline: false,
-  },
-  {
-    id: 5,
-    name: "Alex Johnson",
-    lastMessage: "Thanks for the help!",
-    timestamp: "1d ago",
-    unreadCount: 0,
-    avatar: "👨‍💻",
-    isOnline: false,
-  },
-  {
-    id: 6,
-    name: "Emma Davis",
-    lastMessage: "See you at the party 🎉",
-    timestamp: "2d ago",
-    unreadCount: 0,
-    avatar: "👩‍🦰",
-    isOnline: true,
-  },
-];
+import { mockChats } from "@/config/mock-chats";
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");

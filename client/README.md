@@ -1,34 +1,22 @@
 # Get started
 
-1. Start the app
+1. Install dependencies
 
    ```shell
-   npm install
+   pnpm install
    ```
 
-2. Start the app
+2. Prebuild
 
    ```shell
-    npx expo start
+    npx expo prebuild
    ```
 
-## Building for dev
+3. Start the development build for Android or iOS
 
-  1. Run prebuild to build an native app for android and ios. It will create an android and an ios folder.
+   ```shell
+    npx expo run:ios
+    # or
+    npx expo run:android
+    ```
 
-  ```**shell**
-  npm run prebuild
-  ```
-
-  For iOS, this will only work on an Apple machine, you will need XCode to compile to an native iOS app:
-
-  ```shell
-  npm run ios
-  ```
-
-  For Android, you will need android studios to compile to an native android app:
-  ```shell
-  npm run android
-  ```
-
-  2. Crtl + Cmd + z for dev debugging

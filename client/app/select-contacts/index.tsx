@@ -4,14 +4,20 @@ import { Text } from "@/components/ui/text";
 import { TouchableOpacity, ScrollView, Alert } from "react-native";
 import { router, useLocalSearchParams, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
+import * as FileSystem from "expo-file-system";
+import { loadOrCreateRSAKeyPair } from "@/crypto/keyManager";
+import { encryptImage } from "@/crypto/encryptImage";
+import { sendEncryptedImage, getPublicKey, uploadPublicKey } from "@/api/backend";
+import { config } from "@/config/config";
+
 
 const contacts = [
-  { id: 1, name: "John Doe", avatar: "👨‍💼" },
-  { id: 2, name: "Sarah Wilson", avatar: "👩‍🎨" },
-  { id: 3, name: "Team Group", avatar: "👥" },
-  { id: 4, name: "Mom", avatar: "👩‍🦳" },
-  { id: 5, name: "Alex Johnson", avatar: "👨‍💻" },
-  { id: 6, name: "Emma Davis", avatar: "👩‍🦰" },
+  { id: 1, name: "Note to Self", avatar: "👨‍💼", username: config.username },
+  { id: 2, name: "Sarah Wilson", avatar: "👩‍🎨", username: '' },
+  { id: 3, name: "Team Group", avatar: "👥", username: '' },
+  { id: 4, name: "Mom", avatar: "👩‍🦳", username: '' },
+  { id: 5, name: "Alex Johnson", avatar: "👨‍💻", username: '' },
+  { id: 6, name: "Emma Davis", avatar: "👩‍🦰", username: '' },
 ];
 
 const ContactItem = ({
@@ -62,13 +68,50 @@ export default function ContactSelectionScreen() {
       setSelectedContacts(contacts.map((contact) => contact.id));
     }
   };
-  const handleSend = () => {
+  const handleSend = async () => {
     if (selectedContacts.length === 0) {
       Alert.alert("No contacts selected", "Please select at least one contact to send to.");
       return;
     }
 
-    navigation.replace("/");
+    try {
+      console.debug("Preparing to send encrypted image...");
+      const { publicKey } = await loadOrCreateRSAKeyPair();
+      console.debug("Public Key PEM:", publicKey);
+
+      if (!imageUri || typeof imageUri !== "string") throw new Error("No image URI found");
+
+      const imageBase64 = await FileSystem.readAsStringAsync(imageUri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+
+      const imageBuffer = Uint8Array.from(atob(imageBase64), (c) => c.charCodeAt(0)).buffer;
+
+      for (const contactId of selectedContacts) {
+        const recipient = contacts.find((c) => c.id === contactId);
+        if (!recipient) continue;
+
+        const recipientUserId = recipient.username;
+
+        const { publicKey: recipientKey } = await getPublicKey(recipientUserId);
+
+        const { encryptedImage, encryptedAESKey, iv } = await encryptImage(imageBuffer, recipientKey);
+
+        await sendEncryptedImage({
+          senderId: config.username,
+          recipientId: recipientUserId,
+          iv,
+          encryptedKey: encryptedAESKey,
+          image: encryptedImage,
+        });
+      }
+
+      Alert.alert("Success", `Image sent to ${selectedContacts.length} contact(s)`);
+      navigation.replace("/");
+    } catch (err) {
+      console.error("Send failed:", err);
+      Alert.alert("Error", "Failed to send encrypted image.");
+    }
   };
 
   const allSelected = selectedContacts.length === contacts.length;
