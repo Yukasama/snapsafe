@@ -172,10 +172,6 @@ export default function PhotoEditorScreen() {
       console.warn("Could not capture image", error);
     }
   }
-    // router.push({
-    //   pathname: "/select-contacts",
-    //   params: { imageUri, stickers: JSON.stringify(stickers) },
-    // });
 
   if (!imageUri) {
     return (
