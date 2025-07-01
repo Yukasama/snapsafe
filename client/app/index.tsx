@@ -6,42 +6,15 @@ import { Link } from "expo-router";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { ChatItem } from "@/components/ChatItem";
-import { mockChats } from "@/config/mock-chats";
-import { useMessagePolling } from "@/hooks/useMessagePolling";
-import { getLatestEncryptedMessages } from "@/api/backend";
-import { config } from "@/config/config";
-import { decryptImage } from "@/crypto/decryptImage";
-import { loadOrCreateRSAKeyPair } from "@/crypto/keyManager";
+import { useChats } from "@/context/ChatContext";
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isEditMode, setIsEditMode] = useState(false);
   const [selectedChats, setSelectedChats] = useState<number[]>([]);
-  const [chats, setChats] = useState(mockChats);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const router = useRouter();
-
-  useMessagePolling(async () => {
-    const messages = await getLatestEncryptedMessages(config.username);
-    if (!messages || messages.length === 0) return;
-    const pair = await loadOrCreateRSAKeyPair();
-    const privateKey = pair.privateKey;
-    for (const message of messages) {
-      console.debug("Decrypting message");
-      const decryptedMessage = await decryptImage(
-        message.image,
-        message.encryptedKey,
-        message.iv,
-        privateKey
-      )
-      router.push({
-        pathname: "/view-photo",
-        params: {
-          base64Image: decryptedMessage,
-        },
-      });
-    }
-  })
+  const { chats, setChats } = useChats();
 
   const filteredChats = useMemo(() => {
     if (!searchQuery.trim()) return chats;
@@ -163,7 +136,7 @@ export default function Home() {
           filteredChats.map((chat) => (
             <ChatItem
               key={chat.id}
-              chat={chat}
+              chat={{...chat}}
               isEditMode={isEditMode}
               isSelected={selectedChats.includes(chat.id)}
               onToggleSelect={handleToggleSelect}

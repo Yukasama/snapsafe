@@ -1,15 +1,17 @@
+import { Chat } from "@/context/ChatContext";
 import { config } from "./config";
 
-export const mockChats = [
+export const mockChats: Chat[] = [
   {
     id: 1,
     name: "Note to Self",
     lastMessage: "Buy groceries and pick up dry cleaning",
     timestamp: "2m ago",
     unreadCount: 0,
-    avatar: "👨‍💼",
+    avatar: "📝",
     isOnline: true,
     username: config.username,
+    unreadImages: [],
   },
   {
     id: 2,
@@ -20,26 +22,29 @@ export const mockChats = [
     avatar: "👩‍🎨",
     isOnline: true,
     username: "",
+    unreadImages: [],
   },
   {
     id: 3,
     name: "Team Group",
     lastMessage: "Mike: Great work everyone!",
     timestamp: "1h ago",
-    unreadCount: 5,
+    unreadCount: 0,
     avatar: "👥",
     isOnline: false,
     username: "",
+    unreadImages: [],
   },
   {
     id: 4,
     name: "Mom",
     lastMessage: "Don't forget dinner at 7pm",
     timestamp: "2h ago",
-    unreadCount: 1,
+    unreadCount: 0,
     avatar: "👩‍🦳",
     isOnline: false,
     username: "",
+    unreadImages: [],
   },
   {
     id: 5,
@@ -50,6 +55,7 @@ export const mockChats = [
     avatar: "👨‍💻",
     isOnline: false,
     username: "",
+    unreadImages: [],
   },
   {
     id: 6,
@@ -60,5 +66,6 @@ export const mockChats = [
     avatar: "👩‍🦰",
     isOnline: true,
     username: "",
+    unreadImages: [],
   },
 ];

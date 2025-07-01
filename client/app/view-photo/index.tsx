@@ -1,35 +1,58 @@
-import { useLocalSearchParams, router } from "expo-router";
-import { Image, Pressable, StyleSheet, View } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { Pressable, Image, StyleSheet } from "react-native";
+import { useChats } from "@/context/ChatContext";
 
 export default function PhotoViewerScreen() {
-  const { imageUri, base64Image } = useLocalSearchParams();
+  const { chatId } = useLocalSearchParams<{ chatId: string }>();
+  const id = Number(chatId);
+  const router = useRouter();
+  const { getChatById, updateChat } = useChats();
 
-  const uri =
-    typeof base64Image === "string"
-      ? `data:image/jpeg;base64,${base64Image}`
-      : typeof imageUri === "string"
-      ? imageUri
-      : null;
+  const chat = getChatById(id);
+  const [images, setImages] = useState<string[]>(() =>
+    chat?.unreadImages.slice() ?? []
+  );
+  const [index, setIndex] = useState(0);
 
+  useEffect(() => {
+    if (!images.length) {
+      router.back();
+    }
+  }, []);
+
+  const current = images[index];
+  const uri = current ? `data:image/jpeg;base64,${current}` : null;
   if (!uri) return null;
 
+  const handleTap = () => {
+    // remove from local
+    setImages((prev) => prev.filter((_, i) => i !== index));
+
+    // remove from context + decrement count
+    updateChat(id, {
+      unreadImages: chat!.unreadImages.filter((_, i) => i !== index),
+      unreadCount: Math.max(chat!.unreadCount - 1, 0),
+    });
+
+    // advance to next – if none left, go back
+    if (index < images.length - 1) {
+      // same index now points at next item
+      setIndex(index);
+    } else {
+      router.back();
+    }
+  };
+
   return (
-    <Pressable style={styles.container} onPress={() => router.back()}>
+    <Pressable style={styles.container} onPress={handleTap}>
       <Image source={{ uri }} style={styles.image} resizeMode="contain" />
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "black",
-  },
-  image: {
-    flex: 1,
-    width: "100%",
-    height: "100%",
-  },
+  container: { flex: 1, backgroundColor: "black" },
+  image: { width: "100%", height: "100%" },
 });
 
