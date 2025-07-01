@@ -7,6 +7,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, { useAnimatedStyle, useSharedValue, runOnJS, withSpring, clamp } from "react-native-reanimated";
 import { Ionicons } from "@expo/vector-icons";
+import { captureRef } from "react-native-view-shot";
 
 const { width, height } = Dimensions.get("window");
 
@@ -37,8 +38,8 @@ export default function PhotoEditorScreen() {
   const [stickers, setStickers] = useState<Sticker[]>([]);
   const [category, setCategory] = useState<CategoryKey>("faces");
   const [overTrashGlobal, setOverTrashGlobal] = useState(false);
+  const photoCanvasRef = React.useRef(null);
 
-  // JS callbacks that only take primitives for Reanimated
   const updateStickerPosition = (id: string, x: number, y: number) => {
     setStickers(prev =>
       prev.map(s => (s.id === id ? { ...s, x, y } : s))
@@ -156,11 +157,25 @@ export default function PhotoEditorScreen() {
     );
   };
 
-  const navigateToContacts = () =>
-    router.push({
-      pathname: "/select-contacts",
-      params: { imageUri, stickers: JSON.stringify(stickers) },
-    });
+  const navigateToContacts = async () => {
+    try {
+      const flattenedUri = await captureRef(photoCanvasRef, {
+        format: "png",
+        quality: 1,
+      });
+
+      router.push({
+        pathname: "/select-contacts",
+        params: { imageUri: flattenedUri }, // sticker JSON no longer needed
+      });
+    } catch (error) {
+      console.warn("Could not capture image", error);
+    }
+  }
+    // router.push({
+    //   pathname: "/select-contacts",
+    //   params: { imageUri, stickers: JSON.stringify(stickers) },
+    // });
 
   if (!imageUri) {
     return (
@@ -198,35 +213,43 @@ export default function PhotoEditorScreen() {
           </Box>
         </Box>
 
-        <Box className="flex-1 relative">
+        <Box className="flex-1 relative" ref={photoCanvasRef}>
           <Image source={{ uri: imageUri }} style={{ width: "100%", height: "100%", resizeMode: "cover" }} />
 
           {stickers.map(s => (
             <StickerItem key={s.id} sticker={s} />
           ))}
 
-          {stickers.length > 0 && (
-            <Box
-              className="absolute rounded-full items-center justify-center border-2 bg-red-500/40 border-red-500"
-              style={{
-                width: TRASH_SIZE,
-                height: TRASH_SIZE,
-                bottom: 30,
-                left: width / 2 - TRASH_SIZE / 2,
-                transform: [{ scale: overTrashGlobal ? 1.05 : 1 }],
-              }}
-            >
-              <Text className="text-white text-2xl">🗑️</Text>
-            </Box>
-          )}
+        </Box>
 
-          <Box className="absolute bottom-6 right-6">
-            <TouchableOpacity onPress={navigateToContacts} activeOpacity={0.8}>
-              <Box className="w-14 h-14 bg-blue-500 rounded-full items-center justify-center shadow-lg border-2 border-blue-400">
-                <Ionicons name="arrow-forward" size={24} color="white" />
-              </Box>
-            </TouchableOpacity>
+        {stickers.length > 0 && (
+          <Box
+            className="absolute rounded-full items-center justify-center border-2 bg-red-500/40 border-red-500"
+            style={{
+              width: TRASH_SIZE,
+              height: TRASH_SIZE,
+              bottom: BOTTOM_CONTROLS_HEIGHT + 30,
+              left: width / 2 - TRASH_SIZE / 2,
+              transform: [{ scale: overTrashGlobal ? 1.05 : 1 }],
+            }}
+          >
+            <Text className="text-white text-2xl">🗑️</Text>
           </Box>
+        )}
+
+        <Box className="absolute bottom-6 right-6">
+          <TouchableOpacity onPress={navigateToContacts} activeOpacity={0.8}>
+            <Box
+              className="w-14 h-14 bg-blue-500 rounded-full items-center justify-center shadow-lg border-2 border-blue-400"
+              style={{
+                width: 56,
+                height: 56,
+                bottom: BOTTOM_CONTROLS_HEIGHT + 20,
+                right: 20,
+              }}>
+              <Ionicons name="arrow-forward" size={24} color="white" />
+            </Box>
+          </TouchableOpacity>
         </Box>
 
         <Box style={{ height: BOTTOM_CONTROLS_HEIGHT }} className="bg-black">
