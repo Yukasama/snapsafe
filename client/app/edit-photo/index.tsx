@@ -38,9 +38,22 @@ export default function PhotoEditorScreen() {
   const [category, setCategory] = useState<CategoryKey>("faces");
   const [overTrashGlobal, setOverTrashGlobal] = useState(false);
 
+  // JS callbacks that only take primitives for Reanimated
+  const updateStickerPosition = (id: string, x: number, y: number) => {
+    setStickers(prev =>
+      prev.map(s => (s.id === id ? { ...s, x, y } : s))
+    );
+  };
+
+  const updateStickerScale = (id: string, scale: number) => {
+    setStickers(prev =>
+      prev.map(s => (s.id === id ? { ...s, scale } : s))
+    );
+  };
+
   const addSticker = (emoji: string) => {
     const photoH = height - HEADER_HEIGHT - BOTTOM_CONTROLS_HEIGHT;
-    setStickers((prev) => [
+    setStickers(prev => [
       ...prev,
       {
         id: Date.now().toString(),
@@ -52,7 +65,7 @@ export default function PhotoEditorScreen() {
     ]);
   };
 
-  const removeSticker = (id: string) => setStickers((prev) => prev.filter((s) => s.id !== id));
+  const removeSticker = (id: string) => setStickers(prev => prev.filter(s => s.id !== id));
 
   const StickerItem = ({ sticker }: { sticker: Sticker }) => {
     const tx = useSharedValue(sticker.x);
@@ -68,7 +81,7 @@ export default function PhotoEditorScreen() {
     const offset = React.useRef({ x: 0, y: 0 });
     const pan = Gesture.Pan()
       .minDistance(0)
-      .onBegin((e) => {
+      .onBegin(e => {
         sc.value = withSpring(sticker.scale * 1.2);
         runOnJS(setOverTrashGlobal)(false);
         offset.current = {
@@ -76,7 +89,7 @@ export default function PhotoEditorScreen() {
           y: e.absoluteY - ty.value,
         };
       })
-      .onUpdate((e) => {
+      .onUpdate(e => {
         const x = e.absoluteX - offset.current.x;
         const y = e.absoluteY - offset.current.y;
         tx.value = x;
@@ -92,8 +105,8 @@ export default function PhotoEditorScreen() {
         }
         runOnJS(setOverTrashGlobal)(hovering);
       })
-      .onEnd((e) => {
-        const stillExists = stickers.find((s) => s.id === sticker.id);
+      .onEnd(e => {
+        const stillExists = stickers.find(s => s.id === sticker.id);
         if (!stillExists) return;
 
         const photoH = height - HEADER_HEIGHT - BOTTOM_CONTROLS_HEIGHT;
@@ -104,17 +117,18 @@ export default function PhotoEditorScreen() {
 
         tx.value = x;
         ty.value = y;
-        runOnJS(setStickers)((prev) => prev.map((s) => (s.id === sticker.id ? { ...s, x, y } : s)));
+        // Only primitives go over the bridge:
+        runOnJS(updateStickerPosition)(sticker.id, x, y);
         sc.value = withSpring(sticker.scale);
         runOnJS(setOverTrashGlobal)(false);
       });
 
     const pinch = Gesture.Pinch()
-      .onUpdate((e) => {
+      .onUpdate(e => {
         sc.value = clamp(sticker.scale * e.scale, 0.3, 3);
       })
       .onEnd(() => {
-        runOnJS(setStickers)((prev) => prev.map((s) => (s.id === sticker.id ? { ...s, scale: sc.value } : s)));
+        runOnJS(updateStickerScale)(sticker.id, sc.value);
       });
 
     const gesture = Gesture.Simultaneous(pan, pinch);
@@ -136,7 +150,7 @@ export default function PhotoEditorScreen() {
             style,
           ]}
         >
-          <Text style={{ fontSize: 32 }}>{sticker.emoji}</Text>
+          <Text style={{ fontSize: 19 }}>{sticker.emoji}</Text>
         </Animated.View>
       </GestureDetector>
     );
@@ -187,7 +201,7 @@ export default function PhotoEditorScreen() {
         <Box className="flex-1 relative">
           <Image source={{ uri: imageUri }} style={{ width: "100%", height: "100%", resizeMode: "cover" }} />
 
-          {stickers.map((s) => (
+          {stickers.map(s => (
             <StickerItem key={s.id} sticker={s} />
           ))}
 
@@ -219,7 +233,7 @@ export default function PhotoEditorScreen() {
           <Box className="px-4 py-2">
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               <Box className="flex-row gap-2">
-                {Object.keys(emojiCategories).map((cat) => (
+                {Object.keys(emojiCategories).map(cat => (
                   <TouchableOpacity
                     key={cat}
                     onPress={() => setCategory(cat as CategoryKey)}
@@ -257,7 +271,7 @@ export default function PhotoEditorScreen() {
                     activeOpacity={0.7}
                     className="w-12 h-12 bg-background-700 rounded-full items-center justify-center border border-outline-600"
                   >
-                    <Text style={{ fontSize: 24 }}>{emoji}</Text>
+                    <Text style={{ fontSize: 19 }}>{emoji}</Text>
                   </TouchableOpacity>
                 ))}
               </Box>
@@ -271,3 +285,4 @@ export default function PhotoEditorScreen() {
     </SafeAreaView>
   );
 }
+
