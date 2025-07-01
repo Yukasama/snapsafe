@@ -69,7 +69,7 @@ export default function CameraScreen() {
   };
 
   return (
-    <Box className="flex-1 bg-black">
+    <SafeAreaView className="flex-1 bg-black">
       <CameraView ref={cameraRef} style={{ flex: 1 }} facing={facing}>
         <SafeAreaView>
           <Box className="absolute top-0 left-0 right-0 z-10">
@@ -116,6 +116,6 @@ export default function CameraScreen() {
           </SafeAreaView>
         </Box>
       </CameraView>
-    </Box>
+    </SafeAreaView>
   );
 }
