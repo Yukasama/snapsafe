@@ -9,6 +9,32 @@ import { mockChats } from "@/config/mock-chats";
 import { Message, useChats } from "@/context/ChatContext";
 
 const MessageBubble = ({ message }: { message: Message }) => {
+
+  const timestamp = message.timestamp || new Date();
+  const currentDate = new Date();
+  const delta = currentDate.getTime() - timestamp.getTime();
+  const isWithinLast1hour = delta < 60 * 60 * 1000;
+  const isToday = delta < 24 * 60 * 60 * 1000;
+  let formattedDate = "";
+
+  if (isWithinLast1hour) {
+    formattedDate = `${Math.floor(delta / (60 * 1000))} minutes ago`;
+  } else if (isToday) {
+    formattedDate = timestamp.toLocaleTimeString("de-DE", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  } else {
+    formattedDate = timestamp.toLocaleDateString("de-DE", {
+      minute: "2-digit",
+      hour: "2-digit",
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  }
+
+
   if (message.type !== "text") {
     return (
       <Box className={`flex-row mb-3 ${message.isMe ? "justify-end" : "justify-start"}`}>
@@ -21,7 +47,7 @@ const MessageBubble = ({ message }: { message: Message }) => {
             Photo received
           </Text>
           <Text className={`text-xs mt-1 ${message.isMe ? "text-blue-100" : "text-typography-400"}`}>
-            {message.timestamp?.toLocaleTimeString("de-DE")}
+            {formattedDate}
           </Text>
         </Box>
       </Box>
@@ -36,7 +62,7 @@ const MessageBubble = ({ message }: { message: Message }) => {
       >
         <Text className={`text-sm ${message.isMe ? "text-white" : "text-typography-white"}`}>{message.content}</Text>
         <Text className={`text-xs mt-1 ${message.isMe ? "text-blue-100" : "text-typography-400"}`}>
-          {message.timestamp?.toLocaleTimeString("de-DE")}
+            {formattedDate}
         </Text>
       </Box>
     </Box>
