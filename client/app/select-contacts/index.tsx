@@ -10,22 +10,12 @@ import { encryptImage } from "@/crypto/encryptImage";
 import { sendEncryptedImage, getPublicKey } from "@/api/backend";
 import { useUser } from "@/context/UserContext";
 
-const { username } = useUser(); 
-const contacts = [
-  { id: 1, name: "Note to Self", avatar: "👨‍💼", username: username },
-  { id: 2, name: "Sarah Wilson", avatar: "👩‍🎨", username: '' },
-  { id: 3, name: "Team Group", avatar: "👥", username: '' },
-  { id: 4, name: "Mom", avatar: "👩‍🦳", username: '' },
-  { id: 5, name: "Alex Johnson", avatar: "👨‍💻", username: '' },
-  { id: 6, name: "Emma Davis", avatar: "👩‍🦰", username: '' },
-];
-
 const ContactItem = ({
   contact,
   isSelected,
   onToggle,
 }: {
-  contact: (typeof contacts)[0];
+  contact: { id: number; name: string; avatar: string; username: string | null };
   isSelected: boolean;
   onToggle: () => void;
 }) => {
@@ -54,6 +44,16 @@ export default function ContactSelectionScreen() {
   const { imageUri, stickers } = useLocalSearchParams();
   const [selectedContacts, setSelectedContacts] = useState<number[]>([]);
   const navigation = useRouter();
+  const { username } = useUser();
+
+  const contacts = [
+    { id: 1, name: "Note to Self", avatar: "👨‍💼", username: username },
+    { id: 2, name: "Sarah Wilson", avatar: "👩‍🎨", username: '' },
+    { id: 3, name: "Team Group", avatar: "👥", username: '' },
+    { id: 4, name: "Mom", avatar: "👩‍🦳", username: '' },
+    { id: 5, name: "Alex Johnson", avatar: "👨‍💻", username: '' },
+    { id: 6, name: "Emma Davis", avatar: "👩‍🦰", username: '' },
+  ];
 
   const toggleContact = (contactId: number) => {
     setSelectedContacts((prev) =>
@@ -68,6 +68,7 @@ export default function ContactSelectionScreen() {
       setSelectedContacts(contacts.map((contact) => contact.id));
     }
   };
+
   const handleSend = async () => {
     if (selectedContacts.length === 0) {
       Alert.alert("No contacts selected", "Please select at least one contact to send to.");
@@ -82,8 +83,8 @@ export default function ContactSelectionScreen() {
       if (!imageUri || typeof imageUri !== "string") throw new Error("No image URI found");
 
       const imageBase64 = await FileSystem.readAsStringAsync(imageUri, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
+  encoding: 'base64', 
+});
 
       const imageBuffer = Uint8Array.from(atob(imageBase64), (c) => c.charCodeAt(0)).buffer;
 
@@ -92,12 +93,12 @@ export default function ContactSelectionScreen() {
         if (!recipient) continue;
 
         const recipientUserId = recipient.username;
-        // TODO is can i safely assert, that these are non null?
+        // TODO can i safely assert, that these are non null?
         const { publicKey: recipientKey } = await getPublicKey(recipientUserId!);
 
         const { encryptedImage, encryptedAESKey, iv } = await encryptImage(imageBuffer, recipientKey);
 
-        // TODO is can i safely assert, that these are non null?
+        // TODO can i safely assert, that these are non null?
         await sendEncryptedImage({
           senderId: username!,
           recipientId: recipientUserId!,

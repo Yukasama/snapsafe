@@ -6,7 +6,7 @@ import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import { useColorScheme } from "@/components/useColorScheme";
-import { Stack, useRouter } from "expo-router"; // Removed useSegments as it's not needed here
+import { Stack, useRouter, useSegments } from "expo-router";
 import "../global.css";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { initCrypto } from "@/crypto/initCrypto";
@@ -20,11 +20,11 @@ export { ErrorBoundary } from "expo-router";
 
 SplashScreen.preventAutoHideAsync();
 
-function InitialLayout() {
+const AppLayout = () => {
   const { username, isLoading } = useUser();
   const [isCryptoReady, setCryptoReady] = useState(false);
   const router = useRouter();
-  const colorScheme = useColorScheme();
+  const segments = useSegments();
 
   const [fontsLoaded, fontError] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
@@ -32,11 +32,6 @@ function InitialLayout() {
   });
 
   useEffect(() => {
-    if (fontError) throw fontError;
-  }, [fontError]);
-
-  useEffect(() => {
-    // Initialize crypto when the user is logged in.
     if (username && !isCryptoReady) {
       initCrypto(username)
         .then(() => setCryptoReady(true))
@@ -46,64 +41,60 @@ function InitialLayout() {
         });
     }
   }, [username, isCryptoReady]);
-  
+
   useEffect(() => {
-    if (isLoading || !fontsLoaded) return; // Wait until user and fonts are loaded
+    if (fontError) throw fontError;
+    if (fontsLoaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded, fontError]);
 
-    SplashScreen.hideAsync();
+  useEffect(() => {
+    if (isLoading || !fontsLoaded) return;
 
-    if (!username) {
-      // If the user is not signed in, replace the current history with the login page.
+    // Check if the current route is the login screen.
+    const isLoginScreen = segments[0] === 'login';
+
+    if (!username && !isLoginScreen) {
+      // If user is not logged in and not on the login screen, redirect them there.
       router.replace('/login');
-    } else if (username && isCryptoReady) {
-      // If the user is signed in and crypto is ready, replace with the main app screen.
+    } else if (username && isCryptoReady && isLoginScreen) {
+      // If user is logged in, crypto is ready, and they are on the login screen,
+      // redirect them to the main app.
       router.replace('/');
     }
-    // If user exists but crypto isn't ready, the loading screen will show, no redirect needed yet.
+  }, [username, segments, isLoading, fontsLoaded, isCryptoReady, router]);
 
-  }, [isLoading, fontsLoaded, username, isCryptoReady, router]);
-
-  // Show a loading indicator while checking auth state or initializing.
-  if (isLoading || !fontsLoaded || (username && !isCryptoReady)) {
-    return (
-      <Box className="flex-1 items-center justify-center bg-black">
-        <ActivityIndicator size="large" color="#ffffff" />
-        <Text className="text-white mt-4">{!fontsLoaded ? "Loading fonts..." : "Initializing..."}</Text>
-      </Box>
-    );
-  }
-  
-  // Render the main app navigator. It's always rendered, which fixes the original error.
   return (
-    <ChatProvider>
-      <GestureHandlerRootView className="flex-1">
-        <GluestackUIProvider mode={colorScheme === "dark" ? "dark" : "light"}>
-          <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-            <Stack screenOptions={{ headerShown: false, animation: "slide_from_right" }}>
-              {/* Define all your screens here so the router knows about them */}
-              <Stack.Screen name="login/index" options={{ gestureEnabled: false }} />
-              <Stack.Screen name="index" />
-              <Stack.Screen name="view-photo/index" />
-              <Stack.Screen name="camera/index" />
-              <Stack.Screen name="edit-photo/index" />
-              <Stack.Screen name="select-contacts/index" />
-              <Stack.Screen name="chat/[id]" />
-              <Stack.Screen name="settings/index" options={{ animation: "slide_from_bottom" }} />
-              <Stack.Screen name="shop/index" />
-              <Stack.Screen name="+not-found" />
-            </Stack>
-          </ThemeProvider>
-        </GluestackUIProvider>
-      </GestureHandlerRootView>
-    </ChatProvider>
+      <Stack screenOptions={{ headerShown: false, animation: "slide_from_right" }}>
+        <Stack.Screen name="login/index" options={{ gestureEnabled: false }} />
+        <Stack.Screen name="index" />
+        <Stack.Screen name="view-photo/index" />
+        <Stack.Screen name="camera/index" />
+        <Stack.Screen name="edit-photo/index" />
+        <Stack.Screen name="select-contacts/index" />
+        <Stack.Screen name="chat/[id]" />
+        <Stack.Screen name="settings/index" options={{ animation: "slide_from_bottom" }} />
+        <Stack.Screen name="shop/index" />
+        <Stack.Screen name="+not-found" />
+      </Stack>
   );
 }
 
-// Default export wraps the main layout with the UserProvider
 export default function RootLayout() {
+  const colorScheme = useColorScheme();
+
   return (
     <UserProvider>
-      <InitialLayout />
+      <ChatProvider>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <GluestackUIProvider mode={colorScheme === "dark" ? "dark" : "light"}>
+            <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+              <AppLayout />
+            </ThemeProvider>
+          </GluestackUIProvider>
+        </GestureHandlerRootView>
+      </ChatProvider>
     </UserProvider>
   );
 }

@@ -3,10 +3,10 @@ import { View, TextInput, TouchableOpacity, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Text } from "@/components/ui/text";
 import { Box } from "@/components/ui/box";
-import { useUser } from "@/context/UserContext"; // 👈 Import useUser
+import { useUser } from "@/context/UserContext";
 
 export default function LoginScreen() {
-  const { signIn } = useUser(); // 👈 Use the signIn function from context
+  const { signIn } = useUser();
   const [phoneNumber, setPhoneNumber] = useState("");
 
   const handleLogin = async () => {
@@ -16,7 +16,6 @@ export default function LoginScreen() {
     }
     // This will save the username AND update the app's state
     await signIn(phoneNumber.trim());
-    // No need to call router.replace here, the layout will handle it automatically
   };
 
   return (

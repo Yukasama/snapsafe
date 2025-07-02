@@ -1,74 +1,78 @@
 import { Chat } from "@/context/ChatContext";
 import { useUser } from "@/context/UserContext";
 
+export const useMockChats = (): Chat[] => {
+  const { username } = useUser();
 
-const { username } = useUser();
-export const mockChats: Chat[] = [
-  {
-    id: 1,
-    name: "Note to Self",
-    lastMessage: "Buy groceries and pick up dry cleaning",
-    timestamp: "2m ago",
-    unreadCount: 0,
-    avatar: "📝",
-    isOnline: true,
-    // TODO Could this be null?
-    username: username!,
-    unreadImages: [],
-  },
-  {
-    id: 2,
-    name: "Sarah Wilson",
-    lastMessage: "Can we meet tomorrow?",
-    timestamp: "5m ago",
-    unreadCount: 0,
-    avatar: "👩‍🎨",
-    isOnline: true,
-    username: "",
-    unreadImages: [],
-  },
-  {
-    id: 3,
-    name: "Team Group",
-    lastMessage: "Mike: Great work everyone!",
-    timestamp: "1h ago",
-    unreadCount: 0,
-    avatar: "👥",
-    isOnline: false,
-    username: "",
-    unreadImages: [],
-  },
-  {
-    id: 4,
-    name: "Mom",
-    lastMessage: "Don't forget dinner at 7pm",
-    timestamp: "2h ago",
-    unreadCount: 0,
-    avatar: "👩‍🦳",
-    isOnline: false,
-    username: "",
-    unreadImages: [],
-  },
-  {
-    id: 5,
-    name: "Alex Johnson",
-    lastMessage: "Thanks for the help!",
-    timestamp: "1d ago",
-    unreadCount: 0,
-    avatar: "👨‍💻",
-    isOnline: false,
-    username: "",
-    unreadImages: [],
-  },
-  {
-    id: 6,
-    name: "Emma Davis",
-    lastMessage: "See you at the party 🎉",
-    timestamp: "2d ago",
-    unreadCount: 0,
-    avatar: "👩‍🦰",
-    isOnline: true,
-    username: "",
-    unreadImages: [],
-  },
-];
+  const mockChats: Chat[] = [
+    {
+      id: 1,
+      name: "Note to Self",
+      lastMessage: "Buy groceries and pick up dry cleaning",
+      timestamp: "2m ago",
+      unreadCount: 0,
+      avatar: "📝",
+      isOnline: true,
+      // TODO Could this be null?
+      username: username!,
+      unreadImages: [],
+    },
+    {
+      id: 2,
+      name: "Sarah Wilson",
+      lastMessage: "Can we meet tomorrow?",
+      timestamp: "5m ago",
+      unreadCount: 0,
+      avatar: "👩‍🎨",
+      isOnline: true,
+      username: "",
+      unreadImages: [],
+    },
+    {
+      id: 3,
+      name: "Team Group",
+      lastMessage: "Mike: Great work everyone!",
+      timestamp: "1h ago",
+      unreadCount: 0,
+      avatar: "👥",
+      isOnline: false,
+      username: "",
+      unreadImages: [],
+    },
+    {
+      id: 4,
+      name: "Mom",
+      lastMessage: "Don't forget dinner at 7pm",
+      timestamp: "2h ago",
+      unreadCount: 0,
+      avatar: "👩‍🦳",
+      isOnline: false,
+      username: "",
+      unreadImages: [],
+    },
+    {
+      id: 5,
+      name: "Alex Johnson",
+      lastMessage: "Thanks for the help!",
+      timestamp: "1d ago",
+      unreadCount: 0,
+      avatar: "👨‍💻",
+      isOnline: false,
+      username: "",
+      unreadImages: [],
+    },
+    {
+      id: 6,
+      name: "Emma Davis",
+      lastMessage: "See you at the party 🎉",
+      timestamp: "2d ago",
+      unreadCount: 0,
+      avatar: "👩‍🦰",
+      isOnline: true,
+      username: "",
+      unreadImages: [],
+    },
+  ];
+
+  return mockChats;
+};

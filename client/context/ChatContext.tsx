@@ -1,12 +1,11 @@
 import React, { createContext, useContext, useState, useCallback } from "react";
-import { mockChats } from "@/config/mock-chats";
+import { useMockChats } from "@/config/mock-chats";
 import { getLatestEncryptedMessages } from "@/api/backend";
 import { useMessagePolling } from "@/hooks/useMessagePolling";
 import { decryptImage } from "@/crypto/decryptImage";
 import { loadOrCreateRSAKeyPair } from "@/crypto/keyManager";
 import { useUser } from "@/context/UserContext";
 
-const { username } = useUser();
 export interface Chat {
   id: number;
   name: string;
@@ -28,26 +27,36 @@ interface ChatContextValue {
 
 const ChatContext = createContext<ChatContextValue | null>(null);
 
-export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const { username } = useUser();
+  
+  // ✅ 1. Call the hook at the top level of the component.
+  const initialChats = useMockChats();
+
+  // ✅ 2. Use the resulting array to initialize the state.
   const [chats, setChats] = useState<Chat[]>(() =>
-    mockChats.map((c) => ({ ...c }))
+    initialChats.map((c) => ({ ...c }))
   );
 
-  const getChatById = useCallback((id: number) => {
-    return chats.find((chat) => chat.id === id);
-  }, [chats]);
+  const getChatById = useCallback(
+    (id: number) => {
+      return chats.find((chat) => chat.id === id);
+    },
+    [chats]
+  );
 
   const updateChat = useCallback((id: number, updates: Partial<Chat>) => {
     setChats((prev) =>
-      prev.map((chat) =>
-        chat.id === id ? { ...chat, ...updates } : chat
-      )
+      prev.map((chat) => (chat.id === id ? { ...chat, ...updates } : chat))
     );
   }, []);
 
   useMessagePolling(async () => {
-    // TODO Nullsafe?
-    const messages = await getLatestEncryptedMessages(username!);
+    if (!username) return;
+    
+    const messages = await getLatestEncryptedMessages(username);
     if (!messages?.length) return;
     const { privateKey } = await loadOrCreateRSAKeyPair();
 
@@ -105,4 +114,3 @@ export function useChats() {
   if (!ctx) throw new Error("useChats must be used inside ChatProvider");
   return ctx;
 }
-
