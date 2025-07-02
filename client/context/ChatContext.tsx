@@ -20,13 +20,10 @@ export interface Chat {
 
 export interface Message {
   id: number;
-  text: string;
   timestamp: string;
   isMe: boolean;
   type: "text" | "image";
-  image?: string; // Only for image messages
-  encryptedKey?: string; // For encrypted images
-  iv?: string; // Initialization vector for decryption
+  content: string;
 }
 
 interface ChatContextValue {
@@ -102,11 +99,10 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
                     ...(chat.unreadMessages || []),
                     {
                       id: Date.now(),
-                      text: message.type === "text" ? decryptedMessage : "New photo received",
                       timestamp: new Date().toLocaleTimeString(),
                       isMe: chat.username === config.username,
                       type: message.type,
-                      image: decryptedMessage,
+                      content: decryptedMessage,
                     },
                   ],
                 }
@@ -120,18 +116,17 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
               name: message.from,
               username: message.from,
               avatar: "👤",
-              lastMessage: "New photo received",
+              lastMessage: message.type === "text" ? decryptedMessage : "New photo received",
               timestamp: new Date().toISOString(),
               unreadCount: 1,
               isOnline: false,
               unreadMessages: [
                 {
                   id: Date.now(),
-                  text: message.type === "text" ? decryptedMessage : "New photo received",
                   timestamp: new Date().toLocaleTimeString(),
                   isMe: false,
                   type: message.type,
-                  image: decryptedMessage,
+                  content: decryptedMessage,
                 },
               ],
             },

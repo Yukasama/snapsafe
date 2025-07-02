@@ -31,7 +31,7 @@ export const ChatItem = ({
   };
 
   const handlePress = () => {
-    if (chat.unreadImages && chat.unreadImages.length > 0) {
+    if (chat.unreadMessages && chat.unreadMessages.filter((msg) => msg.type === "image").length > 0) {
       // Navigate to the photo viewer with the latest unread image
       router.push({
         pathname: "/view-photo",
