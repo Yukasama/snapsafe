@@ -55,7 +55,7 @@ export async function getPublicKey(userId: string): Promise<PublicKeyResponse> {
 }
 
 export async function sendEncryptedMessage(data: EncryptedMessageRequest): Promise<void> {
-  console.debug("Sending encrypted image from:", data.senderId, "to:", data.recipientId);
+  console.debug("Sending encrypted message from:", data.senderId, "to:", data.recipientId);
   await fetch(`${baseUrl}/messages`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

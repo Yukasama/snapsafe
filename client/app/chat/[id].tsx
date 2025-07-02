@@ -7,6 +7,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { mockChats } from "@/config/mock-chats";
 import { Message, useChats } from "@/context/ChatContext";
+import { getPublicKey, sendEncryptedMessage } from "@/api/backend";
+import { encryptContent } from "@/crypto/encryptContent";
+import { config } from "@/config/config";
 
 const MessageBubble = ({ message }: { message: Message }) => {
 
@@ -75,12 +78,29 @@ const MessageBubble = ({ message }: { message: Message }) => {
 export default function ChatScreen() {
   const { id } = useLocalSearchParams();
   const [message, setMessage] = useState("");
-  const { setCurrentChat, getCurrentChat } = useChats();
+  const { setCurrentChat, getCurrentChat, setChats } = useChats();
   const chat = mockChats.find((c) => c.id === parseInt(id as string));
 
+  const hasRunOnce = useRef(false);
   useFocusEffect(() => {
-    if (id) setCurrentChat(parseInt(id as string));
-    console.log("Messages:", getCurrentChat()?.messages);
+    if (!hasRunOnce.current) {
+      hasRunOnce.current = true;
+      if (id) setCurrentChat(parseInt(id as string));
+      setChats((prevChats) => {
+        const updatedChats = prevChats.map((c) => {
+          if (c.id === parseInt(id as string)) {
+            for (const msg of c.messages) {
+              if (msg.unread) {
+                msg.unread = false; // Mark all messages as read
+              }
+            }
+            c.unreadCount = 0; // Reset unread count
+          }
+          return c;
+        });
+        return updatedChats;
+      });
+    }
   });
 
   if (!chat) {
@@ -91,10 +111,22 @@ export default function ChatScreen() {
     );
   }
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
     if (message.trim()) {
       console.log("Sending message:", message);
       setMessage("");
+      const textBuffer = Uint8Array.from(atob(message), (c) => c.charCodeAt(0)).buffer;
+      const recipient = chat.username;
+      const { publicKey: recipientKey } = await getPublicKey(recipient);
+      const { encryptedContent: encryptedImage, encryptedAESKey, iv } = await encryptContent(textBuffer, recipientKey);
+      await sendEncryptedMessage({
+        senderId: config.username,
+        recipientId: recipient,
+        iv,
+        encryptedKey: encryptedAESKey,
+        content: encryptedImage,
+        type: "text",
+      });
     }
   };
 
