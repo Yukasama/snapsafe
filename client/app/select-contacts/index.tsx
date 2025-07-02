@@ -1,31 +1,23 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Box } from "@/components/ui/box";
 import { Text } from "@/components/ui/text";
 import { TouchableOpacity, ScrollView, Alert } from "react-native";
-import { router, useLocalSearchParams, useRouter } from "expo-router";
+import { router, useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as FileSystem from "expo-file-system";
 import { loadOrCreateRSAKeyPair } from "@/crypto/keyManager";
 import { encryptImage } from "@/crypto/encryptImage";
 import { sendEncryptedImage, getPublicKey, uploadPublicKey } from "@/api/backend";
 import { config } from "@/config/config";
+import { Chat, useChats } from "@/context/ChatContext";
 
-
-const contacts = [
-  { id: 1, name: "Note to Self", avatar: "👨‍💼", username: config.username },
-  { id: 2, name: "Sarah Wilson", avatar: "👩‍🎨", username: '' },
-  { id: 3, name: "Team Group", avatar: "👥", username: '' },
-  { id: 4, name: "Mom", avatar: "👩‍🦳", username: '' },
-  { id: 5, name: "Alex Johnson", avatar: "👨‍💻", username: '' },
-  { id: 6, name: "Emma Davis", avatar: "👩‍🦰", username: '' },
-];
 
 const ContactItem = ({
   contact,
   isSelected,
   onToggle,
 }: {
-  contact: (typeof contacts)[0];
+  contact: Chat;
   isSelected: boolean;
   onToggle: () => void;
 }) => {
@@ -51,9 +43,22 @@ const ContactItem = ({
 };
 
 export default function ContactSelectionScreen() {
-  const { imageUri, stickers } = useLocalSearchParams();
+  const { imageUri } = useLocalSearchParams();
   const [selectedContacts, setSelectedContacts] = useState<number[]>([]);
+  const { chats, getCurrentChat } = useChats();
   const navigation = useRouter();
+
+  const hasRunOnce = useRef(false);
+  useFocusEffect(() => {
+    if (!hasRunOnce.current) {
+      hasRunOnce.current = true;
+      const id = getCurrentChat()?.id;
+      if (id) {
+        toggleContact(id);
+        console.debug("Pre-selecting chat with ID:", id);
+      }
+    }
+  });
 
   const toggleContact = (contactId: number) => {
     setSelectedContacts((prev) =>
@@ -62,15 +67,15 @@ export default function ContactSelectionScreen() {
   };
 
   const selectAll = () => {
-    if (selectedContacts.length === contacts.length) {
+    if (selectedContacts.length === chats.length) {
       setSelectedContacts([]);
     } else {
-      setSelectedContacts(contacts.map((contact) => contact.id));
+      setSelectedContacts(chats.map((contact) => contact.id));
     }
   };
   const handleSend = async () => {
     if (selectedContacts.length === 0) {
-      Alert.alert("No contacts selected", "Please select at least one contact to send to.");
+      Alert.alert("No chats selected", "Please select at least one contact to send to.");
       return;
     }
 
@@ -88,7 +93,7 @@ export default function ContactSelectionScreen() {
       const imageBuffer = Uint8Array.from(atob(imageBase64), (c) => c.charCodeAt(0)).buffer;
 
       for (const contactId of selectedContacts) {
-        const recipient = contacts.find((c) => c.id === contactId);
+        const recipient = chats.find((c) => c.id === contactId);
         if (!recipient) continue;
 
         const recipientUserId = recipient.username;
@@ -113,7 +118,7 @@ export default function ContactSelectionScreen() {
     }
   };
 
-  const allSelected = selectedContacts.length === contacts.length;
+  const allSelected = selectedContacts.length === chats.length;
 
   return (
     <SafeAreaView className="flex-1 bg-black">
@@ -132,12 +137,12 @@ export default function ContactSelectionScreen() {
 
         <Box className="px-4 py-2 bg-background-800">
           <Text className="text-typography-400 text-sm">
-            {selectedContacts.length} of {contacts.length} contacts selected
+            {selectedContacts.length} of {chats.length} chats selected
           </Text>
         </Box>
 
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-          {contacts.map((contact) => (
+          {chats.map((contact) => (
             <ContactItem
               key={contact.id}
               contact={contact}

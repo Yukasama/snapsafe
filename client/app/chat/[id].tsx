@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Box } from "@/components/ui/box";
 import { ScrollView, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform } from "react-native";
 import { Text } from "@/components/ui/text";
-import { useLocalSearchParams, router } from "expo-router";
+import { useLocalSearchParams, router, Link, useFocusEffect } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { mockChats } from "@/config/mock-chats";
+import { useChats } from "@/context/ChatContext";
 
 const mockMessages = [
   {
@@ -60,7 +61,12 @@ const MessageBubble = ({ message }: { message: (typeof mockMessages)[0] }) => {
 export default function ChatScreen() {
   const { id } = useLocalSearchParams();
   const [message, setMessage] = useState("");
+  const { setCurrentChat } = useChats();
   const chat = mockChats.find((c) => c.id === parseInt(id as string));
+
+  useFocusEffect(() => {
+    if (id) setCurrentChat(parseInt(id as string));
+  });
 
   if (!chat) {
     return (
@@ -145,9 +151,14 @@ export default function ChatScreen() {
                   textAlignVertical: "center",
                 }}
               />
-              <TouchableOpacity className="ml-2">
+              <TouchableOpacity className="ml-3">
                 <Ionicons name="happy-outline" size={26} color="#aaa" />
               </TouchableOpacity>
+              <Link href="/camera" asChild>
+                <TouchableOpacity className="ml-3" onPress={() => console.log("Open camera")}>
+                  <Ionicons name="camera-outline" size={26} color="#aaa" />
+                </TouchableOpacity>
+              </Link>
             </Box>
 
             {/* Send button */}

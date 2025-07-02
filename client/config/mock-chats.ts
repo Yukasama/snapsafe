@@ -25,17 +25,6 @@ export const mockChats: Chat[] = [
     unreadImages: [],
   },
   {
-    id: 3,
-    name: "Team Group",
-    lastMessage: "Mike: Great work everyone!",
-    timestamp: "1h ago",
-    unreadCount: 0,
-    avatar: "👥",
-    isOnline: false,
-    username: "",
-    unreadImages: [],
-  },
-  {
     id: 4,
     name: "Mom",
     lastMessage: "Don't forget dinner at 7pm",

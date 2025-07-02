@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef } from "react";
 import { Box } from "@/components/ui/box";
 import { ScrollView, TouchableOpacity, TextInput } from "react-native";
 import { Text } from "@/components/ui/text";
@@ -8,6 +8,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { ChatItem } from "@/components/ChatItem";
 import { useChats } from "@/context/ChatContext";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useFocusEffect } from "expo-router";
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -15,7 +16,11 @@ export default function Home() {
   const [selectedChats, setSelectedChats] = useState<number[]>([]);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const router = useRouter();
-  const { chats, setChats } = useChats();
+  const { chats, setChats, setCurrentChat } = useChats();
+
+  useFocusEffect(() => {
+    setCurrentChat(null);
+  });
 
   const filteredChats = useMemo(() => {
     if (!searchQuery.trim()) return chats;

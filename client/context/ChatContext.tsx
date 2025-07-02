@@ -23,11 +23,16 @@ interface ChatContextValue {
   setChats: React.Dispatch<React.SetStateAction<Chat[]>>;
   getChatById: (id: number) => Chat | undefined;
   updateChat: (id: number, updates: Partial<Chat>) => void;
+  setCurrentChat: (id: number | null) => void;
+  getCurrentChat: () => Chat | null;
 }
 
 const ChatContext = createContext<ChatContextValue | null>(null);
 
 export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+
+  const [currentChat, setCurrChat] = useState<Chat | null>(null);
+
   const [chats, setChats] = useState<Chat[]>(() =>
     mockChats.map((c) => ({ ...c }))
   );
@@ -43,6 +48,21 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
       )
     );
   }, []);
+
+  const setCurrentChat = useCallback((id: number | null) => {
+    if (id === null) {
+      setCurrChat(null);
+      return;
+    }
+    const chat = getChatById(id);
+    if (chat) {
+      setCurrChat(chat);
+    }
+  }, [getChatById]);
+
+  const getCurrentChat = useCallback(() => {
+    return currentChat;
+  }, [currentChat]);
 
   useMessagePolling(async () => {
     const messages = await getLatestEncryptedMessages(config.username);
@@ -92,7 +112,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
 
   return (
-    <ChatContext.Provider value={{ chats, setChats, getChatById, updateChat }}>
+    <ChatContext.Provider value={{ chats, setChats, getChatById, updateChat, setCurrentChat, getCurrentChat }}>
       {children}
     </ChatContext.Provider>
   );
