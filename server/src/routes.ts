@@ -59,7 +59,7 @@ router.post("/messages", (req: Request, res: Response): void => {
 
   const stmt = db.prepare(`
     INSERT INTO messages (sender_id, recipient_id, encrypted_key, iv, content, type)
-    VALUES (?, ?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?, ?)
   `);
 
   stmt.run(senderId, recipientId, Buffer.from(encryptedKey, "base64"), iv, Buffer.from(content, "base64"), type);

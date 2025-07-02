@@ -6,7 +6,7 @@ import { router, useFocusEffect, useLocalSearchParams, useRouter } from "expo-ro
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as FileSystem from "expo-file-system";
 import { loadOrCreateRSAKeyPair } from "@/crypto/keyManager";
-import { encryptImage } from "@/crypto/encryptContent";
+import { encryptContent } from "@/crypto/encryptContent";
 import { sendEncryptedMessage, getPublicKey } from "@/api/backend";
 import { config } from "@/config/config";
 import { Chat, useChats } from "@/context/ChatContext";
@@ -100,7 +100,7 @@ export default function ContactSelectionScreen() {
 
         const { publicKey: recipientKey } = await getPublicKey(recipientUserId);
 
-        const { encryptedContent: encryptedImage, encryptedAESKey, iv } = await encryptImage(imageBuffer, recipientKey);
+        const { encryptedContent: encryptedImage, encryptedAESKey, iv } = await encryptContent(imageBuffer, recipientKey);
 
         await sendEncryptedMessage({
           senderId: config.username,
