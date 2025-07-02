@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Box } from "@/components/ui/box";
 import { Text } from "@/components/ui/text";
-import { TouchableOpacity, Image, Dimensions, ScrollView } from "react-native";
+import { TouchableOpacity, Image, Dimensions, ScrollView, View } from "react-native";
 import { useLocalSearchParams, router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
@@ -41,20 +41,16 @@ export default function PhotoEditorScreen() {
   const photoCanvasRef = React.useRef(null);
 
   const updateStickerPosition = (id: string, x: number, y: number) => {
-    setStickers(prev =>
-      prev.map(s => (s.id === id ? { ...s, x, y } : s))
-    );
+    setStickers((prev) => prev.map((s) => (s.id === id ? { ...s, x, y } : s)));
   };
 
   const updateStickerScale = (id: string, scale: number) => {
-    setStickers(prev =>
-      prev.map(s => (s.id === id ? { ...s, scale } : s))
-    );
+    setStickers((prev) => prev.map((s) => (s.id === id ? { ...s, scale } : s)));
   };
 
   const addSticker = (emoji: string) => {
     const photoH = height - HEADER_HEIGHT - BOTTOM_CONTROLS_HEIGHT;
-    setStickers(prev => [
+    setStickers((prev) => [
       ...prev,
       {
         id: Date.now().toString(),
@@ -66,7 +62,7 @@ export default function PhotoEditorScreen() {
     ]);
   };
 
-  const removeSticker = (id: string) => setStickers(prev => prev.filter(s => s.id !== id));
+  const removeSticker = (id: string) => setStickers((prev) => prev.filter((s) => s.id !== id));
 
   const StickerItem = ({ sticker }: { sticker: Sticker }) => {
     const tx = useSharedValue(sticker.x);
@@ -82,7 +78,7 @@ export default function PhotoEditorScreen() {
     const offset = React.useRef({ x: 0, y: 0 });
     const pan = Gesture.Pan()
       .minDistance(0)
-      .onBegin(e => {
+      .onBegin((e) => {
         sc.value = withSpring(sticker.scale * 1.2);
         runOnJS(setOverTrashGlobal)(false);
         offset.current = {
@@ -90,7 +86,7 @@ export default function PhotoEditorScreen() {
           y: e.absoluteY - ty.value,
         };
       })
-      .onUpdate(e => {
+      .onUpdate((e) => {
         const x = e.absoluteX - offset.current.x;
         const y = e.absoluteY - offset.current.y;
         tx.value = x;
@@ -106,8 +102,8 @@ export default function PhotoEditorScreen() {
         }
         runOnJS(setOverTrashGlobal)(hovering);
       })
-      .onEnd(e => {
-        const stillExists = stickers.find(s => s.id === sticker.id);
+      .onEnd((e) => {
+        const stillExists = stickers.find((s) => s.id === sticker.id);
         if (!stillExists) return;
 
         const photoH = height - HEADER_HEIGHT - BOTTOM_CONTROLS_HEIGHT;
@@ -125,7 +121,7 @@ export default function PhotoEditorScreen() {
       });
 
     const pinch = Gesture.Pinch()
-      .onUpdate(e => {
+      .onUpdate((e) => {
         sc.value = clamp(sticker.scale * e.scale, 0.3, 3);
       })
       .onEnd(() => {
@@ -171,7 +167,7 @@ export default function PhotoEditorScreen() {
     } catch (error) {
       console.warn("Could not capture image", error);
     }
-  }
+  };
 
   if (!imageUri) {
     return (
@@ -212,10 +208,9 @@ export default function PhotoEditorScreen() {
         <Box className="flex-1 relative" ref={photoCanvasRef} renderToHardwareTextureAndroid={true}>
           <Image source={{ uri: imageUri }} style={{ width: "100%", height: "100%", resizeMode: "cover" }} />
 
-          {stickers.map(s => (
+          {stickers.map((s) => (
             <StickerItem key={s.id} sticker={s} />
           ))}
-
         </Box>
 
         {stickers.length > 0 && (
@@ -233,26 +228,29 @@ export default function PhotoEditorScreen() {
           </Box>
         )}
 
-        <Box className="absolute bottom-6 right-6">
-          <TouchableOpacity onPress={navigateToContacts} activeOpacity={0.8}>
-            <Box
-              className="w-14 h-14 bg-blue-500 rounded-full items-center justify-center shadow-lg border-2 border-blue-400"
-              style={{
-                width: 56,
-                height: 56,
-                bottom: BOTTOM_CONTROLS_HEIGHT + 20,
-                right: 20,
-              }}>
-              <Ionicons name="arrow-forward" size={24} color="white" />
-            </Box>
-          </TouchableOpacity>
+        <Box className="absolute bottom-6 right-6" pointerEvents="box-none">
+          <View pointerEvents="auto">
+            <TouchableOpacity onPress={navigateToContacts} activeOpacity={0.8}>
+              <Box
+                className="w-14 h-14 bg-blue-500 rounded-full items-center justify-center shadow-lg border-2 border-blue-400"
+                style={{
+                  width: 56,
+                  height: 56,
+                  bottom: BOTTOM_CONTROLS_HEIGHT + 20,
+                  right: 20,
+                }}
+              >
+                <Ionicons name="arrow-forward" size={24} color="white" />
+              </Box>
+            </TouchableOpacity>
+          </View>
         </Box>
 
         <Box style={{ height: BOTTOM_CONTROLS_HEIGHT }} className="bg-black">
           <Box className="px-4 py-2">
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               <Box className="flex-row gap-2">
-                {Object.keys(emojiCategories).map(cat => (
+                {Object.keys(emojiCategories).map((cat) => (
                   <TouchableOpacity
                     key={cat}
                     onPress={() => setCategory(cat as CategoryKey)}
@@ -304,4 +302,3 @@ export default function PhotoEditorScreen() {
     </SafeAreaView>
   );
 }
-
