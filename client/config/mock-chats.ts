@@ -11,20 +11,22 @@ export const mockChats: Chat[] = [
     avatar: "📝",
     isOnline: true,
     username: config.username,
-    unreadMessages: [
+    messages: [
       {
         id: 1,
-        text: "Don't forget to call the plumber",
+        content: "Don't forget to call the plumber",
         timestamp: "2025-01-01T12:00:00Z",
         isMe: true,
         type: "text",
+        unread: false,
       },
       {
         id: 2,
-        text: "Also, remember to water the plants",
+        content: "Also, remember to water the plants",
         timestamp: "2025-01-01T12:05:00Z",
         isMe: true,
         type: "text",
+        unread: false,
       },
     ],
   },
@@ -37,20 +39,22 @@ export const mockChats: Chat[] = [
     avatar: "👩‍🎨",
     isOnline: true,
     username: "",
-    unreadMessages: [
+    messages: [
       {
         id: 1,
-        text: "Sure, what time works for you?",
+        content: "Sure, what time works for you?",
         timestamp: "2025-01-01T12:10:00Z",
-        isMe: false,
+        isMe: true,
         type: "text",
+        unread: false,
       },
       {
         id: 2,
-        text: "How about 3 PM?",
+        content: "How about 3 PM?",
         timestamp: "2025-01-01T12:15:00Z",
         isMe: false,
         type: "text",
+        unread: false,
       },
     ],
   },
@@ -63,13 +67,14 @@ export const mockChats: Chat[] = [
     avatar: "👩‍🦳",
     isOnline: false,
     username: "",
-    unreadMessages: [
+    messages: [
       {
         id: 1,
-        text: "Also, bring the dessert!",
+        content: "Also, bring the dessert!",
         timestamp: "2025-01-01T11:00:00Z",
         isMe: false,
         type: "text",
+        unread: false,
       },
     ],
   },
@@ -82,20 +87,22 @@ export const mockChats: Chat[] = [
     avatar: "👨‍💻",
     isOnline: false,
     username: "",
-    unreadMessages: [
+    messages: [
       {
         id: 1,
-        text: "I really appreciate your support on the project.",
+        content: "I really appreciate your support on the project.",
         timestamp: "2025-01-01T10:00:00Z",
-        isMe: false,
+        isMe: true,
         type: "text",
+        unread: false,
       },
       {
         id: 2,
-        text: "Let's catch up next week!",
+        content: "Let's catch up next week!",
         timestamp: "2025-01-01T10:05:00Z",
         isMe: false,
         type: "text",
+        unread: false,
       },
     ],
   },
@@ -108,20 +115,22 @@ export const mockChats: Chat[] = [
     avatar: "👩‍🦰",
     isOnline: true,
     username: "",
-    unreadMessages: [
+    messages: [
       {
         id: 1,
-        text: "Can't wait! It's going to be so much fun.",
+        content: "Can't wait! It's going to be so much fun.",
         timestamp: "2025-01-01T09:00:00Z",
         isMe: false,
         type: "text",
+        unread: false,
       },
       {
         id: 2,
-        text: "I'll bring the drinks!",
+        content: "I'll bring the drinks!",
         timestamp: "2025-01-01T09:05:00Z",
-        isMe: false,
+        isMe: true,
         type: "text",
+        unread: false,
       },
     ],
   },

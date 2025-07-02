@@ -15,7 +15,7 @@ export interface Chat {
   lastMessage: string;
   timestamp: string;
   unreadCount: number;
-  unreadMessages: Message[]
+  messages: Message[]
 }
 
 export interface Message {
@@ -24,6 +24,7 @@ export interface Message {
   isMe: boolean;
   type: "text" | "image";
   content: string;
+  unread: boolean;
 }
 
 interface ChatContextValue {
@@ -95,14 +96,15 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
                   lastMessage: message.type === "text" ? decryptedMessage : "New photo received",
                   timestamp: new Date().toLocaleTimeString(),
                   unreadCount: chat.unreadCount + 1,
-                  unreadMessages: [
-                    ...(chat.unreadMessages || []),
+                  messages: [
+                    ...(chat.messages || []),
                     {
                       id: Date.now(),
                       timestamp: new Date().toLocaleTimeString(),
                       isMe: chat.username === config.username,
                       type: message.type,
                       content: decryptedMessage,
+                      unread: true,
                     },
                   ],
                 }
@@ -120,13 +122,14 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
               timestamp: new Date().toISOString(),
               unreadCount: 1,
               isOnline: false,
-              unreadMessages: [
+              messages: [
                 {
                   id: Date.now(),
                   timestamp: new Date().toLocaleTimeString(),
                   isMe: false,
                   type: message.type,
                   content: decryptedMessage,
+                  unread: true,
                 },
               ],
             },

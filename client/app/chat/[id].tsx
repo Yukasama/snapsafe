@@ -6,42 +6,9 @@ import { useLocalSearchParams, router, Link, useFocusEffect } from "expo-router"
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { mockChats } from "@/config/mock-chats";
-import { useChats } from "@/context/ChatContext";
+import { Message, useChats } from "@/context/ChatContext";
 
-const mockMessages = [
-  {
-    id: 1,
-    text: "Hey there! How are you doing?",
-    timestamp: "10:30 AM",
-    isMe: false,
-  },
-  {
-    id: 2,
-    text: "I'm doing great! Just working on some new projects. How about you?",
-    timestamp: "10:32 AM",
-    isMe: true,
-  },
-  {
-    id: 3,
-    text: "That sounds awesome! I'd love to hear more about what you're working on.",
-    timestamp: "10:33 AM",
-    isMe: false,
-  },
-  {
-    id: 4,
-    text: "Sure! I'm building a chat app with React Native and Expo. It's been really fun so far.",
-    timestamp: "10:35 AM",
-    isMe: true,
-  },
-  {
-    id: 5,
-    text: "Nice! That's exactly what I've been wanting to learn. Any tips for getting started?",
-    timestamp: "10:37 AM",
-    isMe: false,
-  },
-];
-
-const MessageBubble = ({ message }: { message: (typeof mockMessages)[0] }) => {
+const MessageBubble = ({ message }: { message: Message }) => {
   return (
     <Box className={`flex-row mb-3 ${message.isMe ? "justify-end" : "justify-start"}`}>
       <Box
@@ -49,7 +16,7 @@ const MessageBubble = ({ message }: { message: (typeof mockMessages)[0] }) => {
           message.isMe ? "bg-blue-500 rounded-br-md" : "bg-background-800 rounded-bl-md"
         }`}
       >
-        <Text className={`text-sm ${message.isMe ? "text-white" : "text-typography-white"}`}>{message.text}</Text>
+        <Text className={`text-sm ${message.isMe ? "text-white" : "text-typography-white"}`}>{message.content}</Text>
         <Text className={`text-xs mt-1 ${message.isMe ? "text-blue-100" : "text-typography-400"}`}>
           {message.timestamp}
         </Text>
@@ -61,7 +28,7 @@ const MessageBubble = ({ message }: { message: (typeof mockMessages)[0] }) => {
 export default function ChatScreen() {
   const { id } = useLocalSearchParams();
   const [message, setMessage] = useState("");
-  const { setCurrentChat } = useChats();
+  const { setCurrentChat, getCurrentChat } = useChats();
   const chat = mockChats.find((c) => c.id === parseInt(id as string));
 
   useFocusEffect(() => {
@@ -126,7 +93,7 @@ export default function ChatScreen() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 20 }}
         >
-          {mockMessages.map((msg) => (
+          {getCurrentChat()?.messages.map((msg) => (
             <MessageBubble key={msg.id} message={msg} />
           ))}
         </ScrollView>
