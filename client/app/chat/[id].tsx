@@ -13,12 +13,15 @@ const MessageBubble = ({ message }: { message: Message }) => {
   const timestamp = message.timestamp || new Date();
   const currentDate = new Date();
   const delta = currentDate.getTime() - timestamp.getTime();
-  const isWithinLast1hour = delta < 60 * 60 * 1000;
+  const isWithin1Minute = delta < 60 * 1000;
+  const isWithinLast1Hour = delta < 60 * 60 * 1000;
   const isToday = delta < 24 * 60 * 60 * 1000;
   let formattedDate = "";
 
-  if (isWithinLast1hour) {
-    formattedDate = `${Math.floor(delta / (60 * 1000))} minutes ago`;
+  if (isWithin1Minute) {
+    formattedDate = "Just now";
+  } else if (isWithinLast1Hour) {
+    formattedDate = `${Math.floor(delta / (60 * 1000))}m ago`;
   } else if (isToday) {
     formattedDate = timestamp.toLocaleTimeString("de-DE", {
       hour: "2-digit",

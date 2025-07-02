@@ -12,8 +12,6 @@ export interface Chat {
   username: string;
   avatar: string;
   isOnline: boolean;
-  lastMessage: string;
-  timestamp: string;
   unreadCount: number;
   messages: Message[]
 }
@@ -93,8 +91,6 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
             chat.username === message.from
               ? {
                   ...chat,
-                  lastMessage: message.type === "text" ? decryptedMessage : "New photo received",
-                  timestamp: new Date().toLocaleTimeString(),
                   unreadCount: chat.unreadCount + 1,
                   messages: [
                     ...(chat.messages || []),
@@ -118,8 +114,6 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
               name: message.from,
               username: message.from,
               avatar: "👤",
-              lastMessage: message.type === "text" ? decryptedMessage : "New photo received",
-              timestamp: new Date().toISOString(),
               unreadCount: 1,
               isOnline: false,
               messages: [

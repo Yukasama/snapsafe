@@ -33,7 +33,7 @@ export default function PhotoViewerScreen() {
     updateChat(id, {
       messages: chat!.messages.map((msg) => {
         if (msg.id === current.id) {
-          return { ...msg, unread: false, content: "" };
+          return { ...msg, unread: false, content: "Photo received" };
         }
         return msg;
       }),

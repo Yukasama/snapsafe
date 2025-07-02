@@ -51,6 +51,40 @@ export const ChatItem = ({
     </TouchableOpacity>
   );
 
+  const lastMessageObj = chat.messages.slice(-1)[0];
+  let lastMessageText;
+  if (lastMessageObj && lastMessageObj.type === "image" && lastMessageObj.unread) {
+    lastMessageText = "Photo received";
+  } else {
+    lastMessageText = lastMessageObj ? lastMessageObj.content : "No messages yet";
+  }
+
+  let lastMessageTimestamp;
+  if (lastMessageObj) {
+    const date = new Date(lastMessageObj.timestamp);
+    const now = new Date();
+    const diff = now.getTime() - date.getTime();
+    const minutes = Math.floor(diff / 60000);
+    if (minutes < 1) {
+      lastMessageTimestamp = "Just now";
+    } else if (minutes < 60) {
+      lastMessageTimestamp = `${minutes}m ago`;
+    } else if (minutes < 1440) { // 24 hours
+      lastMessageTimestamp = `${Math.floor(minutes / 60)}h ago`;
+    } else if (minutes < 10080) { // 7 days
+      lastMessageTimestamp = `${Math.floor(minutes / 1440)}d ago`;
+    } else {
+      lastMessageTimestamp = date.toLocaleDateString("de-DE", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      });
+    }
+  } else {
+    lastMessageTimestamp = "No messages yet";
+  }
+
+
   if (isEditMode) {
     return (
       <TouchableOpacity onPress={() => onToggleSelect(chat.id)}>
@@ -77,11 +111,11 @@ export const ChatItem = ({
           <Box className="flex-1 ml-3">
             <Box className="flex-row justify-between items-center">
               <Text className="text-typography-white font-medium text-lg">{chat.name}</Text>
-              <Text className="text-typography-400 text-sm">{chat.timestamp}</Text>
+              <Text className="text-typography-400 text-sm">{lastMessageTimestamp}</Text>
             </Box>
             <Box className="flex-row justify-between items-center mt-1">
               <Text className="text-typography-400 text-sm flex-1 mr-2" numberOfLines={1}>
-                {chat.lastMessage}
+                {lastMessageText}
               </Text>
               {chat.unreadCount > 0 && (
                 <Box className="bg-blue-500 rounded-full min-w-[20px] h-5 items-center justify-center px-2">
@@ -113,11 +147,11 @@ export const ChatItem = ({
           <Box className="flex-1 ml-3">
             <Box className="flex-row justify-between items-center">
               <Text className="text-typography-white font-medium text-lg">{chat.name}</Text>
-              <Text className="text-typography-400 text-sm">{chat.timestamp}</Text>
+              <Text className="text-typography-400 text-sm">{lastMessageTimestamp}</Text>
             </Box>
             <Box className="flex-row justify-between items-center mt-1">
               <Text className="text-typography-400 text-sm flex-1 mr-2" numberOfLines={1}>
-                {chat.lastMessage}
+                {lastMessageText}
               </Text>
               {chat.unreadCount > 0 && (
                 <Box className="bg-blue-500 rounded-full min-w-[20px] h-5 items-center justify-center px-2">
