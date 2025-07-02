@@ -7,12 +7,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import * as FileSystem from "expo-file-system";
 import { loadOrCreateRSAKeyPair } from "@/crypto/keyManager";
 import { encryptImage } from "@/crypto/encryptImage";
-import { sendEncryptedImage, getPublicKey, uploadPublicKey } from "@/api/backend";
-import { config } from "@/config/config";
+import { sendEncryptedImage, getPublicKey } from "@/api/backend";
+import { useUser } from "@/context/UserContext";
 
-
+const { username } = useUser(); 
 const contacts = [
-  { id: 1, name: "Note to Self", avatar: "👨‍💼", username: config.username },
+  { id: 1, name: "Note to Self", avatar: "👨‍💼", username: username },
   { id: 2, name: "Sarah Wilson", avatar: "👩‍🎨", username: '' },
   { id: 3, name: "Team Group", avatar: "👥", username: '' },
   { id: 4, name: "Mom", avatar: "👩‍🦳", username: '' },
@@ -92,14 +92,15 @@ export default function ContactSelectionScreen() {
         if (!recipient) continue;
 
         const recipientUserId = recipient.username;
-
-        const { publicKey: recipientKey } = await getPublicKey(recipientUserId);
+        // TODO is can i safely assert, that these are non null?
+        const { publicKey: recipientKey } = await getPublicKey(recipientUserId!);
 
         const { encryptedImage, encryptedAESKey, iv } = await encryptImage(imageBuffer, recipientKey);
 
+        // TODO is can i safely assert, that these are non null?
         await sendEncryptedImage({
-          senderId: config.username,
-          recipientId: recipientUserId,
+          senderId: username!,
+          recipientId: recipientUserId!,
           iv,
           encryptedKey: encryptedAESKey,
           image: encryptedImage,

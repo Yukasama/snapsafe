@@ -1,6 +1,8 @@
 import { Chat } from "@/context/ChatContext";
-import { config } from "./config";
+import { useUser } from "@/context/UserContext";
 
+
+const { username } = useUser();
 export const mockChats: Chat[] = [
   {
     id: 1,
@@ -10,7 +12,8 @@ export const mockChats: Chat[] = [
     unreadCount: 0,
     avatar: "📝",
     isOnline: true,
-    username: config.username,
+    // TODO Could this be null?
+    username: username!,
     unreadImages: [],
   },
   {

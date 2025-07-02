@@ -4,8 +4,9 @@ import { getLatestEncryptedMessages } from "@/api/backend";
 import { useMessagePolling } from "@/hooks/useMessagePolling";
 import { decryptImage } from "@/crypto/decryptImage";
 import { loadOrCreateRSAKeyPair } from "@/crypto/keyManager";
-import { config } from "@/config/config";
+import { useUser } from "@/context/UserContext";
 
+const { username } = useUser();
 export interface Chat {
   id: number;
   name: string;
@@ -45,7 +46,8 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   useMessagePolling(async () => {
-    const messages = await getLatestEncryptedMessages(config.username);
+    // TODO Nullsafe?
+    const messages = await getLatestEncryptedMessages(username!);
     if (!messages?.length) return;
     const { privateKey } = await loadOrCreateRSAKeyPair();
 
