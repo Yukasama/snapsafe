@@ -2,7 +2,7 @@ import express from "express";
 import routes from "./routes";
 
 const app = express();
-const PORT = 3000;
+const PORT = 50648;
 const BASE_URL = "0.0.0.0";
 
 app.use(express.json({ limit: "10mb" }));
