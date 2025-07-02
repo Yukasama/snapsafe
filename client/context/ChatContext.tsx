@@ -20,7 +20,7 @@ export interface Chat {
 
 export interface Message {
   id: number;
-  timestamp: string;
+  timestamp: Date;
   isMe: boolean;
   type: "text" | "image";
   content: string;
@@ -100,7 +100,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
                     ...(chat.messages || []),
                     {
                       id: Date.now(),
-                      timestamp: new Date().toLocaleTimeString(),
+                      timestamp: new Date(),
                       isMe: chat.username === config.username,
                       type: message.type,
                       content: decryptedMessage,
@@ -125,7 +125,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
               messages: [
                 {
                   id: Date.now(),
-                  timestamp: new Date().toLocaleTimeString(),
+                  timestamp: new Date(),
                   isMe: false,
                   type: message.type,
                   content: decryptedMessage,

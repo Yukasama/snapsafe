@@ -11,7 +11,7 @@ export default function PhotoViewerScreen() {
 
   const chat = getChatById(id);
   const [images, setImages] = useState<Message[]>(() =>
-    chat?.messages.filter((msg) => msg.type === "image").slice() ?? []
+    chat?.messages.filter((msg) => msg.type === "image" && msg.unread).slice() ?? []
   );
   const [index, setIndex] = useState(0);
 
@@ -31,7 +31,12 @@ export default function PhotoViewerScreen() {
 
     // remove from context + decrement count
     updateChat(id, {
-      messages: chat!.messages.filter((msg) => msg.id !== current.id),
+      messages: chat!.messages.map((msg) => {
+        if (msg.id === current.id) {
+          return { ...msg, unread: false, content: "" };
+        }
+        return msg;
+      }),
       unreadCount: Math.max(chat!.unreadCount - 1, 0),
     });
 

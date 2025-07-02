@@ -9,6 +9,24 @@ import { mockChats } from "@/config/mock-chats";
 import { Message, useChats } from "@/context/ChatContext";
 
 const MessageBubble = ({ message }: { message: Message }) => {
+  if (message.type !== "text") {
+    return (
+      <Box className={`flex-row mb-3 ${message.isMe ? "justify-end" : "justify-start"}`}>
+        <Box
+          className={`max-w-[80%] px-4 py-2 rounded-2xl ${
+            message.isMe ? "bg-blue-500 rounded-br-md" : "bg-background-800 rounded-bl-md"
+          }`}
+        >
+          <Text className={`text-sm italic ${message.isMe ? "text-white" : "text-typography-white"}`}>
+            Photo received
+          </Text>
+          <Text className={`text-xs mt-1 ${message.isMe ? "text-blue-100" : "text-typography-400"}`}>
+            {message.timestamp?.toLocaleTimeString("de-DE")}
+          </Text>
+        </Box>
+      </Box>
+    );
+  }
   return (
     <Box className={`flex-row mb-3 ${message.isMe ? "justify-end" : "justify-start"}`}>
       <Box
@@ -18,7 +36,7 @@ const MessageBubble = ({ message }: { message: Message }) => {
       >
         <Text className={`text-sm ${message.isMe ? "text-white" : "text-typography-white"}`}>{message.content}</Text>
         <Text className={`text-xs mt-1 ${message.isMe ? "text-blue-100" : "text-typography-400"}`}>
-          {message.timestamp}
+          {message.timestamp?.toLocaleTimeString("de-DE")}
         </Text>
       </Box>
     </Box>
@@ -33,6 +51,7 @@ export default function ChatScreen() {
 
   useFocusEffect(() => {
     if (id) setCurrentChat(parseInt(id as string));
+    console.log("Messages:", getCurrentChat()?.messages);
   });
 
   if (!chat) {

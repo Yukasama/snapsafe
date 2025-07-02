@@ -1,5 +1,6 @@
 import { Chat } from "@/context/ChatContext";
 import { config } from "./config";
+import { withOptions } from "tailwindcss/plugin";
 
 export const mockChats: Chat[] = [
   {
@@ -15,7 +16,7 @@ export const mockChats: Chat[] = [
       {
         id: 1,
         content: "Don't forget to call the plumber",
-        timestamp: "2025-01-01T12:00:00Z",
+        timestamp: new Date("2025-01-01T12:00:00Z"),
         isMe: true,
         type: "text",
         unread: false,
@@ -23,9 +24,17 @@ export const mockChats: Chat[] = [
       {
         id: 2,
         content: "Also, remember to water the plants",
-        timestamp: "2025-01-01T12:05:00Z",
+        timestamp: new Date("2025-01-01T12:05:00Z"),
         isMe: true,
         type: "text",
+        unread: false,
+      },
+      {
+        id: 3,
+        content: "",
+        timestamp: new Date("2025-01-01T12:09:00Z"),
+        isMe: true,
+        type: "image",
         unread: false,
       },
     ],
@@ -43,7 +52,7 @@ export const mockChats: Chat[] = [
       {
         id: 1,
         content: "Sure, what time works for you?",
-        timestamp: "2025-01-01T12:10:00Z",
+        timestamp: new Date("2025-01-01T11:50:00Z"),
         isMe: true,
         type: "text",
         unread: false,
@@ -51,7 +60,7 @@ export const mockChats: Chat[] = [
       {
         id: 2,
         content: "How about 3 PM?",
-        timestamp: "2025-01-01T12:15:00Z",
+        timestamp: new Date("2025-01-01T11:55:00Z"),
         isMe: false,
         type: "text",
         unread: false,
@@ -71,7 +80,7 @@ export const mockChats: Chat[] = [
       {
         id: 1,
         content: "Also, bring the dessert!",
-        timestamp: "2025-01-01T11:00:00Z",
+        timestamp: new Date("2025-01-01T10:30:00Z"),
         isMe: false,
         type: "text",
         unread: false,
@@ -91,7 +100,7 @@ export const mockChats: Chat[] = [
       {
         id: 1,
         content: "I really appreciate your support on the project.",
-        timestamp: "2025-01-01T10:00:00Z",
+        timestamp: new Date("2025-01-01T10:00:00Z"),
         isMe: true,
         type: "text",
         unread: false,
@@ -99,7 +108,7 @@ export const mockChats: Chat[] = [
       {
         id: 2,
         content: "Let's catch up next week!",
-        timestamp: "2025-01-01T10:05:00Z",
+        timestamp: new Date("2025-01-01T10:05:00Z"),
         isMe: false,
         type: "text",
         unread: false,
@@ -119,7 +128,7 @@ export const mockChats: Chat[] = [
       {
         id: 1,
         content: "Can't wait! It's going to be so much fun.",
-        timestamp: "2025-01-01T09:00:00Z",
+        timestamp: new Date("2025-01-01T09:00:00Z"),
         isMe: false,
         type: "text",
         unread: false,
@@ -127,7 +136,7 @@ export const mockChats: Chat[] = [
       {
         id: 2,
         content: "I'll bring the drinks!",
-        timestamp: "2025-01-01T09:05:00Z",
+        timestamp: new Date("2025-01-01T09:05:00Z"),
         isMe: true,
         type: "text",
         unread: false,
