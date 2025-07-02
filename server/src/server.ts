@@ -4,7 +4,7 @@ import routes from "./routes";
 const app = express();
 const PORT = 50648;
 // listen on all interfaces
-const BASE_URL = "0.0.0.0";
+const BASE_URL = "127.0.0.1";
 
 app.use(express.json({ limit: "10mb" }));
 
