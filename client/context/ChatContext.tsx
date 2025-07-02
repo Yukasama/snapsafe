@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useCallback } from "react";
 import { useMockChats } from "@/config/mock-chats";
 import { getLatestEncryptedMessages } from "@/api/backend";
 import { useMessagePolling } from "@/hooks/useMessagePolling";
-import { decryptImage } from "@/crypto/decryptImage";
+import { decryptContent } from "@/crypto/decryptContent";
 import { loadOrCreateRSAKeyPair } from "@/crypto/keyManager";
 import { useUser } from "@/context/UserContext";
 
@@ -12,10 +12,17 @@ export interface Chat {
   username: string;
   avatar: string;
   isOnline: boolean;
-  lastMessage: string;
-  timestamp: string;
   unreadCount: number;
-  unreadImages: any[];
+  messages: Message[]
+}
+
+export interface Message {
+  id: number;
+  timestamp: Date;
+  isMe: boolean;
+  type: "text" | "image";
+  content: string;
+  unread: boolean;
 }
 
 interface ChatContextValue {
@@ -23,21 +30,19 @@ interface ChatContextValue {
   setChats: React.Dispatch<React.SetStateAction<Chat[]>>;
   getChatById: (id: number) => Chat | undefined;
   updateChat: (id: number, updates: Partial<Chat>) => void;
-  currentChat: Chat | null;
-  setCurrentChat: React.Dispatch<React.SetStateAction<Chat | null>>;
+  setCurrentChat: (id: number | null) => void;
+  getCurrentChat: () => Chat | null;
 }
 
 const ChatContext = createContext<ChatContextValue | null>(null);
 
-export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { username } = useUser();
   const initialChats = useMockChats();
+  const [currentChat, setCurrChat] = useState<Chat | null>(null);
   const [chats, setChats] = useState<Chat[]>(() =>
     initialChats.map((c) => ({ ...c }))
   );
-  const [currentChat, setCurrentChat] = useState<Chat | null>(null); // Added this line
 
   const getChatById = useCallback(
     (id: number) => {
@@ -52,6 +57,21 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
     );
   }, []);
 
+  const setCurrentChat = useCallback((id: number | null) => {
+    if (id === null) {
+      setCurrChat(null);
+      return;
+    }
+    const chat = getChatById(id);
+    if (chat) {
+      setCurrChat(chat);
+    }
+  }, [getChatById]);
+
+  const getCurrentChat = useCallback(() => {
+    return currentChat;
+  }, [currentChat]);
+
   useMessagePolling(async () => {
     if (!username) return;
     
@@ -60,8 +80,8 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
     const { privateKey } = await loadOrCreateRSAKeyPair();
 
     for (const message of messages) {
-      const decryptedImage = await decryptImage(
-        message.image,
+      const decryptedMessage = await decryptContent(
+        message.content,
         message.encryptedKey,
         message.iv,
         privateKey
@@ -74,10 +94,18 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
             chat.username === message.from
               ? {
                   ...chat,
-                  lastMessage: "New photo received",
-                  timestamp: new Date().toLocaleTimeString(),
                   unreadCount: chat.unreadCount + 1,
-                  unreadImages: [...(chat.unreadImages || []), decryptedImage],
+                  messages: [
+                    ...(chat.messages || []),
+                    {
+                      id: Date.now(),
+                      timestamp: new Date(),
+                      isMe: chat.username === username,
+                      type: message.type,
+                      content: decryptedMessage,
+                      unread: true,
+                    },
+                  ],
                 }
               : chat
           );
@@ -89,11 +117,18 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
               name: message.from,
               username: message.from,
               avatar: "👤",
-              lastMessage: "New photo received",
-              timestamp: new Date().toISOString(),
               unreadCount: 1,
               isOnline: false,
-              unreadImages: [decryptedImage],
+              messages: [
+                {
+                  id: Date.now(),
+                  timestamp: new Date(),
+                  isMe: false,
+                  type: message.type,
+                  content: decryptedMessage,
+                  unread: true,
+                },
+              ],
             },
           ];
         }
@@ -102,7 +137,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
   });
 
   return (
-    <ChatContext.Provider value={{ chats, setChats, getChatById, updateChat, currentChat, setCurrentChat }}>
+    <ChatContext.Provider value={{ chats, setChats, getChatById, updateChat, setCurrentChat, getCurrentChat }}>
       {children}
     </ChatContext.Provider>
   );

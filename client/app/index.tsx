@@ -32,8 +32,7 @@ export default function Home() {
 
     return chats.filter(
       (chat) =>
-        chat.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        chat.lastMessage.toLowerCase().includes(searchQuery.toLowerCase())
+        chat.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [chats, searchQuery]);
 

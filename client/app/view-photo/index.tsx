@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Pressable, Image, StyleSheet } from "react-native";
-import { useChats } from "@/context/ChatContext";
+import { Message, useChats } from "@/context/ChatContext";
 
 export default function PhotoViewerScreen() {
   const { chatId } = useLocalSearchParams<{ chatId: string }>();
@@ -10,8 +10,8 @@ export default function PhotoViewerScreen() {
   const { getChatById, updateChat } = useChats();
 
   const chat = getChatById(id);
-  const [images, setImages] = useState<string[]>(() =>
-    chat?.unreadImages.slice() ?? []
+  const [images, setImages] = useState<Message[]>(() =>
+    chat?.messages.filter((msg) => msg.type === "image" && msg.unread).slice() ?? []
   );
   const [index, setIndex] = useState(0);
 
@@ -22,7 +22,7 @@ export default function PhotoViewerScreen() {
   }, []);
 
   const current = images[index];
-  const uri = current ? `data:image/jpeg;base64,${current}` : null;
+  const uri = current ? `data:image/jpeg;base64,${current.content}` : null;
   if (!uri) return null;
 
   const handleTap = () => {
@@ -31,7 +31,12 @@ export default function PhotoViewerScreen() {
 
     // remove from context + decrement count
     updateChat(id, {
-      unreadImages: chat!.unreadImages.filter((_, i) => i !== index),
+      messages: chat!.messages.map((msg) => {
+        if (msg.id === current.id) {
+          return { ...msg, unread: false, content: "Photo received" };
+        }
+        return msg;
+      }),
       unreadCount: Math.max(chat!.unreadCount - 1, 0),
     });
 

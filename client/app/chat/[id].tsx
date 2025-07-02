@@ -1,46 +1,64 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Box } from "@/components/ui/box";
 import { ScrollView, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform } from "react-native";
 import { Text } from "@/components/ui/text";
-import { useLocalSearchParams, router } from "expo-router";
+import { useLocalSearchParams, router, Link, useFocusEffect } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useMockChats } from "@/config/mock-chats";
+import { Message, useChats } from "@/context/ChatContext";
+import { getPublicKey, sendEncryptedMessage } from "@/api/backend";
+import { encryptContent } from "@/crypto/encryptContent";
+import { useUser } from "@/context/UserContext";
 
-const mockMessages = [
-  {
-    id: 1,
-    text: "Hey there! How are you doing?",
-    timestamp: "10:30 AM",
-    isMe: false,
-  },
-  {
-    id: 2,
-    text: "I'm doing great! Just working on some new projects. How about you?",
-    timestamp: "10:32 AM",
-    isMe: true,
-  },
-  {
-    id: 3,
-    text: "That sounds awesome! I'd love to hear more about what you're working on.",
-    timestamp: "10:33 AM",
-    isMe: false,
-  },
-  {
-    id: 4,
-    text: "Sure! I'm building a chat app with React Native and Expo. It's been really fun so far.",
-    timestamp: "10:35 AM",
-    isMe: true,
-  },
-  {
-    id: 5,
-    text: "Nice! That's exactly what I've been wanting to learn. Any tips for getting started?",
-    timestamp: "10:37 AM",
-    isMe: false,
-  },
-];
+const MessageBubble = ({ message }: { message: Message }) => {
 
-const MessageBubble = ({ message }: { message: (typeof mockMessages)[0] }) => {
+  const timestamp = message.timestamp || new Date();
+  const currentDate = new Date();
+  const delta = currentDate.getTime() - timestamp.getTime();
+  const isWithin1Minute = delta < 60 * 1000;
+  const isWithinLast1Hour = delta < 60 * 60 * 1000;
+  const isToday = delta < 24 * 60 * 60 * 1000;
+  let formattedDate = "";
+
+  if (isWithin1Minute) {
+    formattedDate = "Just now";
+  } else if (isWithinLast1Hour) {
+    formattedDate = `${Math.floor(delta / (60 * 1000))}m ago`;
+  } else if (isToday) {
+    formattedDate = timestamp.toLocaleTimeString("de-DE", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  } else {
+    formattedDate = timestamp.toLocaleDateString("de-DE", {
+      minute: "2-digit",
+      hour: "2-digit",
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  }
+
+
+  if (message.type !== "text") {
+    return (
+      <Box className={`flex-row mb-3 ${message.isMe ? "justify-end" : "justify-start"}`}>
+        <Box
+          className={`max-w-[80%] px-4 py-2 rounded-2xl ${
+            message.isMe ? "bg-blue-500 rounded-br-md" : "bg-background-800 rounded-bl-md"
+          }`}
+        >
+          <Text className={`text-sm italic ${message.isMe ? "text-white" : "text-typography-white"}`}>
+            Photo received
+          </Text>
+          <Text className={`text-xs mt-1 ${message.isMe ? "text-blue-100" : "text-typography-400"}`}>
+            {formattedDate}
+          </Text>
+        </Box>
+      </Box>
+    );
+  }
   return (
     <Box className={`flex-row mb-3 ${message.isMe ? "justify-end" : "justify-start"}`}>
       <Box
@@ -48,9 +66,9 @@ const MessageBubble = ({ message }: { message: (typeof mockMessages)[0] }) => {
           message.isMe ? "bg-blue-500 rounded-br-md" : "bg-background-800 rounded-bl-md"
         }`}
       >
-        <Text className={`text-sm ${message.isMe ? "text-white" : "text-typography-white"}`}>{message.text}</Text>
+        <Text className={`text-sm ${message.isMe ? "text-white" : "text-typography-white"}`}>{message.content}</Text>
         <Text className={`text-xs mt-1 ${message.isMe ? "text-blue-100" : "text-typography-400"}`}>
-          {message.timestamp}
+            {formattedDate}
         </Text>
       </Box>
     </Box>
@@ -58,10 +76,34 @@ const MessageBubble = ({ message }: { message: (typeof mockMessages)[0] }) => {
 };
 
 export default function ChatScreen() {
+  const { username } = useUser();
   const initialChats = useMockChats();
   const { id } = useLocalSearchParams();
   const [message, setMessage] = useState("");
   const chat = initialChats.find((c) => c.id === parseInt(id as string));
+  const { setCurrentChat, getCurrentChat, setChats } = useChats();
+
+  const hasRunOnce = useRef(false);
+  useFocusEffect(() => {
+    if (!hasRunOnce.current) {
+      hasRunOnce.current = true;
+      if (id) setCurrentChat(parseInt(id as string));
+      setChats((prevChats) => {
+        const updatedChats = prevChats.map((c) => {
+          if (c.id === parseInt(id as string)) {
+            for (const msg of c.messages) {
+              if (msg.unread) {
+                msg.unread = false; // Mark all messages as read
+              }
+            }
+            c.unreadCount = 0; // Reset unread count
+          }
+          return c;
+        });
+        return updatedChats;
+      });
+    }
+  });
 
   if (!chat) {
     return (
@@ -71,10 +113,22 @@ export default function ChatScreen() {
     );
   }
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
     if (message.trim()) {
       console.log("Sending message:", message);
       setMessage("");
+      const textBuffer = Uint8Array.from(atob(message), (c) => c.charCodeAt(0)).buffer;
+      const recipient = chat.username;
+      const { publicKey: recipientKey } = await getPublicKey(recipient);
+      const { encryptedContent: encryptedImage, encryptedAESKey, iv } = await encryptContent(textBuffer, recipientKey);
+      await sendEncryptedMessage({
+        senderId: username!,
+        recipientId: recipient,
+        iv,
+        encryptedKey: encryptedAESKey,
+        content: encryptedImage,
+        type: "text",
+      });
     }
   };
 
@@ -121,7 +175,7 @@ export default function ChatScreen() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 20 }}
         >
-          {mockMessages.map((msg) => (
+          {getCurrentChat()?.messages.map((msg) => (
             <MessageBubble key={msg.id} message={msg} />
           ))}
         </ScrollView>
@@ -146,9 +200,14 @@ export default function ChatScreen() {
                   textAlignVertical: "center",
                 }}
               />
-              <TouchableOpacity className="ml-2">
+              <TouchableOpacity className="ml-3">
                 <Ionicons name="happy-outline" size={26} color="#aaa" />
               </TouchableOpacity>
+              <Link href="/camera" asChild>
+                <TouchableOpacity className="ml-3" onPress={() => console.log("Open camera")}>
+                  <Ionicons name="camera-outline" size={26} color="#aaa" />
+                </TouchableOpacity>
+              </Link>
             </Box>
 
             {/* Send button */}

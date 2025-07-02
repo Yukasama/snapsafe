@@ -12,7 +12,8 @@ interface MessageRow {
   sender_id: string;
   iv: string;
   encrypted_key: Buffer;
-  image: Buffer;
+  content: Buffer;
+  type: string;
   timestamp: number;
 }
 
@@ -50,18 +51,18 @@ router.get("/keys/:userId", (req: Request, res: Response): void => {
 // Store encrypted image + AES key
 router.post("/messages", (req: Request, res: Response): void => {
   console.debug("Received request to store message");
-  const { senderId, recipientId, iv, encryptedKey, image } = req.body;
-  if (!senderId || !recipientId || !iv || !encryptedKey || !image) {
+  const { senderId, recipientId, iv, encryptedKey, content, type } = req.body;
+  if (!senderId || !recipientId || !iv || !encryptedKey || !content || !type) {
     res.status(400).json({ error: "Missing fields" });
     return;
   }
 
   const stmt = db.prepare(`
-    INSERT INTO messages (sender_id, recipient_id, encrypted_key, iv, image)
-    VALUES (?, ?, ?, ?, ?)
+    INSERT INTO messages (sender_id, recipient_id, encrypted_key, iv, content, type)
+    VALUES (?, ?, ?, ?, ?, ?)
   `);
 
-  stmt.run(senderId, recipientId, Buffer.from(encryptedKey, "base64"), iv, Buffer.from(image, "base64"));
+  stmt.run(senderId, recipientId, Buffer.from(encryptedKey, "base64"), iv, Buffer.from(content, "base64"), type);
 
   res.json({ success: true });
 });
@@ -92,7 +93,8 @@ router.get("/messages/:recipientId", (req: Request, res: Response): void => {
       from: msg.sender_id,
       iv: msg.iv,
       encryptedKey: Buffer.from(msg.encrypted_key).toString("base64"),
-      image: Buffer.from(msg.image).toString("base64"),
+      content: Buffer.from(msg.content).toString("base64"),
+      type: msg.type,
       timestamp: msg.timestamp,
     });
   }
