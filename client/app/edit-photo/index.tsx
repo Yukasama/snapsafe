@@ -209,7 +209,7 @@ export default function PhotoEditorScreen() {
           </Box>
         </Box>
 
-        <Box className="flex-1 relative" ref={photoCanvasRef}>
+        <Box className="flex-1 relative" ref={photoCanvasRef} renderToHardwareTextureAndroid={true}>
           <Image source={{ uri: imageUri }} style={{ width: "100%", height: "100%", resizeMode: "cover" }} />
 
           {stickers.map(s => (

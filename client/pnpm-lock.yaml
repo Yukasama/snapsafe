@@ -108,10 +108,10 @@ importers:
         specifier: ^2.4.0
         version: 2.4.0(09777ec5b1d0450421babc5931f6a631)
       '@react-navigation/bottom-tabs':
-        specifier: ^7.4.2
+        specifier: ^7.2.0
         version: 7.4.2(@react-navigation/native@7.1.14(react-native@0.76.9(@babel/core@7.27.7)(@babel/preset-env@7.27.2(@babel/core@7.27.7))(@react-native-community/cli@18.0.0(typescript@5.8.3))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native-safe-area-context@4.12.0(react-native@0.76.9(@babel/core@7.27.7)(@babel/preset-env@7.27.2(@babel/core@7.27.7))(@react-native-community/cli@18.0.0(typescript@5.8.3))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native-screens@4.4.0(react-native@0.76.9(@babel/core@7.27.7)(@babel/preset-env@7.27.2(@babel/core@7.27.7))(@react-native-community/cli@18.0.0(typescript@5.8.3))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native@0.76.9(@babel/core@7.27.7)(@babel/preset-env@7.27.2(@babel/core@7.27.7))(@react-native-community/cli@18.0.0(typescript@5.8.3))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1)
       '@react-navigation/native':
-        specifier: ^7.1.14
+        specifier: ^7.0.14
         version: 7.1.14(react-native@0.76.9(@babel/core@7.27.7)(@babel/preset-env@7.27.2(@babel/core@7.27.7))(@react-native-community/cli@18.0.0(typescript@5.8.3))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1)
       babel-plugin-module-resolver:
         specifier: ^5.0.2
