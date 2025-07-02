@@ -23,6 +23,8 @@ interface ChatContextValue {
   setChats: React.Dispatch<React.SetStateAction<Chat[]>>;
   getChatById: (id: number) => Chat | undefined;
   updateChat: (id: number, updates: Partial<Chat>) => void;
+  currentChat: Chat | null;
+  setCurrentChat: React.Dispatch<React.SetStateAction<Chat | null>>;
 }
 
 const ChatContext = createContext<ChatContextValue | null>(null);
@@ -31,14 +33,11 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const { username } = useUser();
-  
-  // ✅ 1. Call the hook at the top level of the component.
   const initialChats = useMockChats();
-
-  // ✅ 2. Use the resulting array to initialize the state.
   const [chats, setChats] = useState<Chat[]>(() =>
     initialChats.map((c) => ({ ...c }))
   );
+  const [currentChat, setCurrentChat] = useState<Chat | null>(null); // Added this line
 
   const getChatById = useCallback(
     (id: number) => {
@@ -103,7 +102,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
   });
 
   return (
-    <ChatContext.Provider value={{ chats, setChats, getChatById, updateChat }}>
+    <ChatContext.Provider value={{ chats, setChats, getChatById, updateChat, currentChat, setCurrentChat }}>
       {children}
     </ChatContext.Provider>
   );
