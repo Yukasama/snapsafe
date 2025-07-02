@@ -50,15 +50,6 @@ export default function ContactSelectionScreen() {
   const navigation = useRouter();
   const { username } = useUser();
 
-  const contacts = [
-    { id: 1, name: "Note to Self", avatar: "👨‍💼", username: username },
-    { id: 2, name: "Sarah Wilson", avatar: "👩‍🎨", username: '' },
-    { id: 3, name: "Team Group", avatar: "👥", username: '' },
-    { id: 4, name: "Mom", avatar: "👩‍🦳", username: '' },
-    { id: 5, name: "Alex Johnson", avatar: "👨‍💻", username: '' },
-    { id: 6, name: "Emma Davis", avatar: "👩‍🦰", username: '' },
-  ];
-
   const hasRunOnce = useRef(false);
   useFocusEffect(() => {
     if (!hasRunOnce.current) {
@@ -105,11 +96,12 @@ export default function ContactSelectionScreen() {
       const imageBuffer = Uint8Array.from(atob(imageBase64), (c) => c.charCodeAt(0)).buffer;
 
       for (const contactId of selectedContacts) {
+        console.log(`Searching for Chat with ContactId: ${contactId}}`)
         const recipient = chats.find((c) => c.id === contactId);
         if (!recipient) continue;
 
         const recipientUserId = recipient.username;
-        const { publicKey: recipientKey } = await getPublicKey(recipientUserId!);
+        const { publicKey: recipientKey } = await getPublicKey(recipientUserId);
 
         const { encryptedContent: encryptedImage, encryptedAESKey, iv } = await encryptContent(imageBuffer, recipientKey);
 
