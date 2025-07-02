@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useCallback } from "react";
 import { mockChats } from "@/config/mock-chats";
 import { getLatestEncryptedMessages } from "@/api/backend";
 import { useMessagePolling } from "@/hooks/useMessagePolling";
-import { decryptImage } from "@/crypto/decryptImage";
+import { decryptContent } from "@/crypto/decryptContent";
 import { loadOrCreateRSAKeyPair } from "@/crypto/keyManager";
 import { config } from "@/config/config";
 
@@ -15,7 +15,18 @@ export interface Chat {
   lastMessage: string;
   timestamp: string;
   unreadCount: number;
-  unreadImages: any[];
+  unreadMessages: Message[]
+}
+
+export interface Message {
+  id: number;
+  text: string;
+  timestamp: string;
+  isMe: boolean;
+  type: "text" | "image";
+  image?: string; // Only for image messages
+  encryptedKey?: string; // For encrypted images
+  iv?: string; // Initialization vector for decryption
 }
 
 interface ChatContextValue {
@@ -70,8 +81,8 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const { privateKey } = await loadOrCreateRSAKeyPair();
 
     for (const message of messages) {
-      const decryptedImage = await decryptImage(
-        message.image,
+      const decryptedMessage = await decryptContent(
+        message.content,
         message.encryptedKey,
         message.iv,
         privateKey
@@ -84,10 +95,20 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
             chat.username === message.from
               ? {
                   ...chat,
-                  lastMessage: "New photo received",
+                  lastMessage: message.type === "text" ? decryptedMessage : "New photo received",
                   timestamp: new Date().toLocaleTimeString(),
                   unreadCount: chat.unreadCount + 1,
-                  unreadImages: [...(chat.unreadImages || []), decryptedImage],
+                  unreadMessages: [
+                    ...(chat.unreadMessages || []),
+                    {
+                      id: Date.now(),
+                      text: message.type === "text" ? decryptedMessage : "New photo received",
+                      timestamp: new Date().toLocaleTimeString(),
+                      isMe: chat.username === config.username,
+                      type: message.type,
+                      image: decryptedMessage,
+                    },
+                  ],
                 }
               : chat
           );
@@ -103,7 +124,16 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
               timestamp: new Date().toISOString(),
               unreadCount: 1,
               isOnline: false,
-              unreadImages: [decryptedImage],
+              unreadMessages: [
+                {
+                  id: Date.now(),
+                  text: message.type === "text" ? decryptedMessage : "New photo received",
+                  timestamp: new Date().toLocaleTimeString(),
+                  isMe: false,
+                  type: message.type,
+                  image: decryptedMessage,
+                },
+              ],
             },
           ];
         }

@@ -11,7 +11,22 @@ export const mockChats: Chat[] = [
     avatar: "📝",
     isOnline: true,
     username: config.username,
-    unreadImages: [],
+    unreadMessages: [
+      {
+        id: 1,
+        text: "Don't forget to call the plumber",
+        timestamp: "2025-01-01T12:00:00Z",
+        isMe: true,
+        type: "text",
+      },
+      {
+        id: 2,
+        text: "Also, remember to water the plants",
+        timestamp: "2025-01-01T12:05:00Z",
+        isMe: true,
+        type: "text",
+      },
+    ],
   },
   {
     id: 2,
@@ -22,7 +37,22 @@ export const mockChats: Chat[] = [
     avatar: "👩‍🎨",
     isOnline: true,
     username: "",
-    unreadImages: [],
+    unreadMessages: [
+      {
+        id: 1,
+        text: "Sure, what time works for you?",
+        timestamp: "2025-01-01T12:10:00Z",
+        isMe: false,
+        type: "text",
+      },
+      {
+        id: 2,
+        text: "How about 3 PM?",
+        timestamp: "2025-01-01T12:15:00Z",
+        isMe: false,
+        type: "text",
+      },
+    ],
   },
   {
     id: 4,
@@ -33,7 +63,15 @@ export const mockChats: Chat[] = [
     avatar: "👩‍🦳",
     isOnline: false,
     username: "",
-    unreadImages: [],
+    unreadMessages: [
+      {
+        id: 1,
+        text: "Also, bring the dessert!",
+        timestamp: "2025-01-01T11:00:00Z",
+        isMe: false,
+        type: "text",
+      },
+    ],
   },
   {
     id: 5,
@@ -44,7 +82,22 @@ export const mockChats: Chat[] = [
     avatar: "👨‍💻",
     isOnline: false,
     username: "",
-    unreadImages: [],
+    unreadMessages: [
+      {
+        id: 1,
+        text: "I really appreciate your support on the project.",
+        timestamp: "2025-01-01T10:00:00Z",
+        isMe: false,
+        type: "text",
+      },
+      {
+        id: 2,
+        text: "Let's catch up next week!",
+        timestamp: "2025-01-01T10:05:00Z",
+        isMe: false,
+        type: "text",
+      },
+    ],
   },
   {
     id: 6,
@@ -55,6 +108,21 @@ export const mockChats: Chat[] = [
     avatar: "👩‍🦰",
     isOnline: true,
     username: "",
-    unreadImages: [],
+    unreadMessages: [
+      {
+        id: 1,
+        text: "Can't wait! It's going to be so much fun.",
+        timestamp: "2025-01-01T09:00:00Z",
+        isMe: false,
+        type: "text",
+      },
+      {
+        id: 2,
+        text: "I'll bring the drinks!",
+        timestamp: "2025-01-01T09:05:00Z",
+        isMe: false,
+        type: "text",
+      },
+    ],
   },
 ];

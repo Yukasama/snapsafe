@@ -12,7 +12,8 @@ CREATE TABLE IF NOT EXISTS messages (
   recipient_id TEXT NOT NULL,
   encrypted_key BLOB NOT NULL,
   iv TEXT NOT NULL,
-  image BLOB NOT NULL,
+  content BLOB NOT NULL,
+  type TEXT NOT NULL CHECK(type IN ('text', 'image')),
   timestamp INTEGER DEFAULT (strftime('%s','now'))
 );
 

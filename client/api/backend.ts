@@ -14,19 +14,21 @@ export interface PublicKeyResponse {
   publicKey: JsonWebKey;
 }
 
-export interface EncryptedImageRequest {
+export interface EncryptedMessageRequest {
   senderId: string;
   recipientId: string;
   iv: string; // base64
   encryptedKey: string; // base64 AES key encrypted with RSA
-  image: string; // base64 AES-encrypted image
+  content: string; // base64 AES-encrypted image
+  type: "image" | "text";
 }
 
 export interface EncryptedMessageResponse {
   from: string;
   iv: string;
   encryptedKey: string;
-  image: string;
+  content: string;
+  type: "image" | "text";
   timestamp: number;
 }
 
@@ -52,7 +54,7 @@ export async function getPublicKey(userId: string): Promise<PublicKeyResponse> {
   } as PublicKeyResponse;
 }
 
-export async function sendEncryptedImage(data: EncryptedImageRequest): Promise<void> {
+export async function sendEncryptedMessage(data: EncryptedMessageRequest): Promise<void> {
   console.debug("Sending encrypted image from:", data.senderId, "to:", data.recipientId);
   await fetch(`${baseUrl}/messages`, {
     method: "POST",
