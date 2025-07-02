@@ -50,16 +50,23 @@ const AppLayout = () => {
   }, [fontsLoaded, fontError]);
 
   useEffect(() => {
+    console.log("Auth Check:", {
+        isLoading,
+        fontsLoaded,
+        username,
+        segments,
+        isCryptoReady
+    });
+
     if (isLoading || !fontsLoaded) return;
 
-    // Check if the current route is the login screen.
-    const isLoginScreen = segments[0] === 'login';
+    const inAuthGroup = segments[0] === 'login';
 
-    if (!username && !isLoginScreen) {
-      // If user is not logged in and not on the login screen, redirect them there.
+    if (!username && !inAuthGroup) {
+      // If user is not signed in and not in auth group, redirect to login.
       router.replace('/login');
-    } else if (username && isCryptoReady && isLoginScreen) {
-      // If user is logged in, crypto is ready, and they are on the login screen,
+    } else if (username && isCryptoReady && inAuthGroup) {
+      // If user is signed in, crypto is ready, and they are in the auth group,
       // redirect them to the main app.
       router.replace('/');
     }

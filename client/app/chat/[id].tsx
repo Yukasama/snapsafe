@@ -5,7 +5,7 @@ import { Text } from "@/components/ui/text";
 import { useLocalSearchParams, router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import { mockChats } from "@/config/mock-chats";
+import { useMockChats } from "@/config/mock-chats";
 
 const mockMessages = [
   {
@@ -58,9 +58,10 @@ const MessageBubble = ({ message }: { message: (typeof mockMessages)[0] }) => {
 };
 
 export default function ChatScreen() {
+  const initialChats = useMockChats();
   const { id } = useLocalSearchParams();
   const [message, setMessage] = useState("");
-  const chat = mockChats.find((c) => c.id === parseInt(id as string));
+  const chat = initialChats.find((c) => c.id === parseInt(id as string));
 
   if (!chat) {
     return (
