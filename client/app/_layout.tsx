@@ -1,123 +1,89 @@
 import 'react-native-get-random-values';
+import React, { useEffect, useState } from "react";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
-import { useEffect, useState } from "react";
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import { useColorScheme } from "@/components/useColorScheme";
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router"; // Removed useSegments as it's not needed here
 import "../global.css";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { initCrypto } from "@/crypto/initCrypto";
 import { ChatProvider } from '@/context/ChatContext';
 import { UserProvider, useUser } from "@/context/UserContext";
-import { ActivityIndicator, TextInput, TouchableOpacity, View, Alert } from 'react-native';
+import { ActivityIndicator, Alert } from 'react-native';
 import { Box } from '@/components/ui/box';
 import { Text } from '@/components/ui/text';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 export { ErrorBoundary } from "expo-router";
 
 SplashScreen.preventAutoHideAsync();
 
-// asks for the user's phone number
-function AskForUsername() {
-  const { signIn } = useUser();
-  const [phoneNumber, setPhoneNumber] = useState("");
-
-  const handleContinue = async () => {
-    if (phoneNumber.trim().length < 2) {
-      Alert.alert("Invalid Phone Number", "Please enter a valid phone number.");
-      return;
-    }
-    await signIn(phoneNumber.trim());
-  };
-
-  return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: 'black' }}>
-      <View style={{ flex: 1, justifyContent: 'center', padding: 32 }}>
-        <Text className="text-white text-3xl font-bold text-center mb-8">
-          Enter Your Phone Number
-        </Text>
-        <Box className="bg-background-800 rounded-lg p-4 mb-6">
-          <TextInput
-            className="text-white text-lg text-center"
-            placeholder="e.g., +49 151 123456"
-            placeholderTextColor="#666666"
-            keyboardType="phone-pad"
-            value={phoneNumber}
-            onChangeText={setPhoneNumber}
-          />
-        </Box>
-        <TouchableOpacity
-          onPress={handleContinue}
-          className="bg-blue-600 p-4 rounded-lg"
-        >
-          <Text className="text-white text-center text-lg font-bold">
-            Continue
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
-  );
-}
-
-
-function AppInitializer() {
-  const { username } = useUser();
-  const [isAppReady, setAppReady] = useState(false);
+function InitialLayout() {
+  const { username, isLoading } = useUser();
+  const [isCryptoReady, setCryptoReady] = useState(false);
+  const router = useRouter();
   const colorScheme = useColorScheme();
 
-  const [loaded, error] = useFonts({
+  const [fontsLoaded, fontError] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
     ...FontAwesome.font,
   });
 
   useEffect(() => {
-    if (error) throw error;
-  }, [error]);
-
-  // Hide splash screen only when fonts are loaded and app is ready to show something
-  useEffect(() => {
-    if (loaded && (isAppReady || !username)) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded, isAppReady, username]);
+    if (fontError) throw fontError;
+  }, [fontError]);
 
   useEffect(() => {
-    if (username) {
+    // Initialize crypto when the user is logged in.
+    if (username && !isCryptoReady) {
       initCrypto(username)
-        .then(() => setAppReady(true))
+        .then(() => setCryptoReady(true))
         .catch((err) => {
           console.error("Fatal crypto init error:", err);
-          Alert.alert("Initialization Failed", "Could not initialize the app. Please restart.");
+          Alert.alert("Initialization Failed", "Could not initialize app.");
         });
     }
-  }, [username]);
+  }, [username, isCryptoReady]);
+  
+  useEffect(() => {
+    if (isLoading || !fontsLoaded) return; // Wait until user and fonts are loaded
 
-  if (!loaded) return null;
+    SplashScreen.hideAsync();
 
-  if (!username) {
-    return <AskForUsername />;
-  }
+    if (!username) {
+      // If the user is not signed in, replace the current history with the login page.
+      router.replace('/login');
+    } else if (username && isCryptoReady) {
+      // If the user is signed in and crypto is ready, replace with the main app screen.
+      router.replace('/');
+    }
+    // If user exists but crypto isn't ready, the loading screen will show, no redirect needed yet.
 
-  if (!isAppReady) {
+  }, [isLoading, fontsLoaded, username, isCryptoReady, router]);
+
+  // Show a loading indicator while checking auth state or initializing.
+  if (isLoading || !fontsLoaded || (username && !isCryptoReady)) {
     return (
-       <Box className="flex-1 items-center justify-center bg-black">
+      <Box className="flex-1 items-center justify-center bg-black">
         <ActivityIndicator size="large" color="#ffffff" />
-        <Text className="text-white mt-4">Initializing...</Text>
+        <Text className="text-white mt-4">{!fontsLoaded ? "Loading fonts..." : "Initializing..."}</Text>
       </Box>
     );
   }
-
+  
+  // Render the main app navigator. It's always rendered, which fixes the original error.
   return (
     <ChatProvider>
       <GestureHandlerRootView className="flex-1">
         <GluestackUIProvider mode={colorScheme === "dark" ? "dark" : "light"}>
           <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
             <Stack screenOptions={{ headerShown: false, animation: "slide_from_right" }}>
+              {/* Define all your screens here so the router knows about them */}
+              <Stack.Screen name="login/index" options={{ gestureEnabled: false }} />
               <Stack.Screen name="index" />
+              <Stack.Screen name="view-photo/index" />
               <Stack.Screen name="camera/index" />
               <Stack.Screen name="edit-photo/index" />
               <Stack.Screen name="select-contacts/index" />
@@ -133,21 +99,11 @@ function AppInitializer() {
   );
 }
 
-function RootLayout() {
-  const { isLoading } = useUser();
-
-  // Show splash screen while we are checking for a user in storage
-  if (isLoading) {
-    return null;
-  }
-
-  return <AppInitializer />;
-}
-
-export default function RootLayoutWrapper() {
+// Default export wraps the main layout with the UserProvider
+export default function RootLayout() {
   return (
     <UserProvider>
-      <RootLayout />
+      <InitialLayout />
     </UserProvider>
-  )
+  );
 }

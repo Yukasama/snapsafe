@@ -1,13 +1,12 @@
 import React, { useState } from "react";
 import { View, TextInput, TouchableOpacity, Alert } from "react-native";
-import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Text } from "@/components/ui/text";
 import { Box } from "@/components/ui/box";
-import { saveUsername } from "@/lib/user";
+import { useUser } from "@/context/UserContext";
 
 export default function LoginScreen() {
-  const router = useRouter();
+  const { signIn } = useUser();
   const [phoneNumber, setPhoneNumber] = useState("");
 
   const handleLogin = async () => {
@@ -15,8 +14,7 @@ export default function LoginScreen() {
       Alert.alert("Invalid Phone Number", "Please enter a valid phone number.");
       return;
     }
-    await saveUsername(phoneNumber.trim());
-    router.replace("/"); // Navigate to the main chat screen
+    await signIn(phoneNumber.trim());
   };
 
   return (
@@ -28,7 +26,7 @@ export default function LoginScreen() {
         <Box className="bg-background-800 rounded-lg p-4 mb-6">
           <TextInput
             className="text-white text-lg text-center"
-            placeholder="e.g., +1 234 567 890"
+            placeholder="e.g., +49 151 123456"
             placeholderTextColor="#666666"
             keyboardType="phone-pad"
             value={phoneNumber}
