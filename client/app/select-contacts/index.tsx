@@ -9,7 +9,6 @@ import { loadOrCreateRSAKeyPair } from "@/crypto/keyManager";
 import { useUser } from "@/context/UserContext";
 import { encryptContent } from "@/crypto/encryptContent";
 import { sendEncryptedMessage, getPublicKey } from "@/api/backend";
-import { config } from "@/config/config";
 import { Chat, useChats } from "@/context/ChatContext";
 
 
@@ -101,8 +100,15 @@ export default function ContactSelectionScreen() {
         const recipient = chats.find((c) => c.id === contactId);
         if (!recipient) continue;
 
-        const recipientUserId = recipient.username;
+        let recipientUserId;
+        // TODO Hardcoded right now
+        if (contactId === 1) {
+          recipientUserId = username!;
+        } else {
+          recipientUserId = recipient.username;
         console.log(`Username: ${recipientUserId}`)
+        }
+        
         const { publicKey: recipientKey } = await getPublicKey(recipientUserId);
 
         const { encryptedContent: encryptedImage, encryptedAESKey, iv } = await encryptContent(imageBuffer, recipientKey);
