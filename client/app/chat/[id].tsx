@@ -10,8 +10,7 @@ import { getPublicKey, sendEncryptedMessage } from "@/api/backend";
 import { encryptContent } from "@/crypto/encryptContent";
 import { useUser } from "@/context/UserContext";
 
-const MessageBubble = ({ message }: { message: Message }) => {
-
+const MessageBubble = ({ message, chatId }: { message: Message, chatId: number }) => {
   const timestamp = message.timestamp || new Date();
   const currentDate = new Date();
   const delta = currentDate.getTime() - timestamp.getTime();
@@ -39,24 +38,61 @@ const MessageBubble = ({ message }: { message: Message }) => {
     });
   }
 
+  const handlePress = () => {
+    console.log("Opening photo viewer for chatId:", chatId);
+    router.push({
+      pathname: "/view-photo",
+      params: {
+        chatId: chatId,
+      },
+    });
+  };
 
-  if (message.type !== "text") {
-    return (
-      <Box className={`flex-row mb-3 ${message.isMe ? "justify-end" : "justify-start"}`}>
-        <Box
-          className={`max-w-[80%] px-4 py-2 rounded-2xl ${
-            message.isMe ? "bg-blue-500 rounded-br-md" : "bg-background-800 rounded-bl-md"
-          }`}
-        >
-          <Text className={`text-sm italic ${message.isMe ? "text-white" : "text-typography-white"}`}>
-            Photo received
-          </Text>
-          <Text className={`text-xs mt-1 ${message.isMe ? "text-blue-100" : "text-typography-400"}`}>
-            {formattedDate}
-          </Text>
+  if (message.type === "image") {
+    console.log("Rendering image message bubble", message);
+    if (message.unread) {
+      return (
+        <TouchableOpacity onPress={handlePress}>
+          <Box className={`flex-row mb-3 ${message.isMe ? "justify-end" : "justify-start"}`}>
+            <Box
+              className={`max-w-[80%] px-4 py-2 rounded-2xl ${
+                message.isMe ? "bg-blue-500 rounded-br-md" : "bg-background-800 rounded-bl-md"
+              }`}
+            >
+              <Box className="flex-row items-center gap-2">
+                <Ionicons name="eye" size={16} color={message.isMe ? "white" : "#aaa"} />
+                <Text className={`text-sm italic ${message.isMe ? "text-white" : "text-typography-white"}`}>
+                  Photo received
+                </Text>
+              </Box>
+              <Text className={`text-xs mt-1 ${message.isMe ? "text-blue-100" : "text-typography-400"}`}>
+                {formattedDate}
+              </Text>
+            </Box>
+          </Box>
+        </TouchableOpacity>
+      );
+    } else {
+      return (
+        <Box className={`flex-row mb-3 ${message.isMe ? "justify-end" : "justify-start"}`}>
+          <Box
+            className={`max-w-[80%] px-4 py-2 rounded-2xl ${
+              message.isMe ? "bg-blue-500 rounded-br-md" : "bg-background-800 rounded-bl-md"
+             }`}
+          >
+            <Box className="flex-row items-center gap-2">
+              <Ionicons name="reader" size={16} color={message.isMe ? "white" : "#aaa"} />
+              <Text className={`text-sm italic ${message.isMe ? "text-white" : "text-typography-white"}`}>
+                Photo received
+              </Text>
+            </Box>
+            <Text className={`text-xs mt-1 ${message.isMe ? "text-blue-100" : "text-typography-400"}`}>
+              {formattedDate}
+            </Text>
+          </Box>
         </Box>
-      </Box>
-    );
+      );
+    }
   }
   return (
     <Box className={`flex-row mb-3 ${message.isMe ? "justify-end" : "justify-start"}`}>
@@ -78,7 +114,7 @@ export default function ChatScreen() {
   const { username } = useUser();
   const { id } = useLocalSearchParams();
   const [message, setMessage] = useState("");
-  const { setCurrentChat, getCurrentChat, setChats, chats } = useChats();
+  const { setCurrentChat, getCurrentChat, setChats, chats, updateChat } = useChats();
   const chat = chats.find((c) => c.id === parseInt(id as string));
 
   useEffect(() => {
@@ -94,7 +130,7 @@ export default function ChatScreen() {
         const updatedChats = prevChats.map((c) => {
           if (c.id === parseInt(id as string)) {
             for (const msg of c.messages) {
-              if (msg.unread) {
+              if (msg.unread && msg.type === "text") {
                 msg.unread = false; // Mark all messages as read
               }
             }
@@ -119,7 +155,6 @@ export default function ChatScreen() {
 
   const sendMessage = async () => {
     if (message.trim()) {
-
       try {
         console.log("Sending message:", message);
         const textBuffer = new TextEncoder().encode(message.trim()).buffer as ArrayBuffer;
@@ -135,6 +170,20 @@ export default function ChatScreen() {
           content: encryptedImage,
           type: "text",
           timestamp: Date.now(),
+        });
+        updateChat(parseInt(id as string), {
+          ...chat,
+          messages: [
+            ...chat.messages,
+            {
+              id: Date.now(),
+              content: message.trim(),
+              type: "text",
+              isMe: true,
+              timestamp: new Date(),
+              unread: false,
+            },
+          ],
         });
       } catch (error) {
         console.error("Error sending message:", error);
@@ -186,7 +235,7 @@ export default function ChatScreen() {
           contentContainerStyle={{ paddingBottom: 20 }}
         >
           {getCurrentChat()?.messages.map((msg) => (
-            <MessageBubble key={msg.id} message={msg} />
+            <MessageBubble key={msg.id} message={msg} chatId={chat.id} />
           ))}
         </ScrollView>
 

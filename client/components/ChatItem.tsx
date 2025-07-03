@@ -115,7 +115,7 @@ export const ChatItem = ({
             </Box>
             <Box className="flex-row justify-between items-center mt-1">
               <Text className="text-typography-400 text-sm flex-1 mr-2" numberOfLines={1}>
-                {lastMessageText}
+                {lastMessageText as string}
               </Text>
               {chat.unreadCount > 0 && (
                 <Box className="bg-blue-500 rounded-full min-w-[20px] h-5 items-center justify-center px-2">
@@ -151,7 +151,7 @@ export const ChatItem = ({
             </Box>
             <Box className="flex-row justify-between items-center mt-1">
               <Text className="text-typography-400 text-sm flex-1 mr-2" numberOfLines={1}>
-                {lastMessageText}
+                {lastMessageText as string}
               </Text>
               {chat.unreadCount > 0 && (
                 <Box className="bg-blue-500 rounded-full min-w-[20px] h-5 items-center justify-center px-2">
