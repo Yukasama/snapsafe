@@ -1,6 +1,4 @@
 import { Chat } from "@/context/ChatContext";
-import { useUser } from "@/context/UserContext";
-import { getUsername } from "@/lib/user";
 
 export const initialChats: Chat[] = [
   {
@@ -39,7 +37,7 @@ export const initialChats: Chat[] = [
   },
   {
     id: 2,
-    name: "Christopher Claus",
+    name: "Christopher",
     unreadCount: 0,
     avatar: "👩‍🎨",
     isOnline: true,
