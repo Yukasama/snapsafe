@@ -89,7 +89,7 @@ export default function ContactSelectionScreen() {
       if (!imageUri || typeof imageUri !== "string") throw new Error("No image URI found");
 
       const imageBase64 = await FileSystem.readAsStringAsync(imageUri, {
-  encoding: 'base64', 
+  encoding: 'base64',
 });
 
       const imageBuffer = Uint8Array.from(atob(imageBase64), (c) => c.charCodeAt(0)).buffer;
@@ -108,7 +108,7 @@ export default function ContactSelectionScreen() {
           recipientUserId = recipient.username;
         console.log(`Username: ${recipientUserId}`)
         }
-        
+
         const { publicKey: recipientKey } = await getPublicKey(recipientUserId);
 
         const { encryptedContent: encryptedImage, encryptedAESKey, iv } = await encryptContent(imageBuffer, recipientKey);
@@ -124,7 +124,12 @@ export default function ContactSelectionScreen() {
         });
       }
 
-      navigation.replace("/");
+      if (getCurrentChat()?.id) {
+        navigation.replace("/");
+        navigation.push(`/chat/${getCurrentChat()?.id}`);
+      } else {
+        navigation.replace("/");
+      }
     } catch (err) {
       console.error("Send failed:", err);
       Alert.alert("Error", "Failed to send encrypted image.");
