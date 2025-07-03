@@ -120,6 +120,7 @@ export default function ContactSelectionScreen() {
           encryptedKey: encryptedAESKey,
           content: encryptedImage,
           type: "image",
+          timestamp: Date.now(),
         });
       }
 

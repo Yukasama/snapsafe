@@ -51,18 +51,26 @@ router.get("/keys/:userId", (req: Request, res: Response): void => {
 // Store encrypted image + AES key
 router.post("/messages", (req: Request, res: Response): void => {
   console.debug("Received request to store message");
-  const { senderId, recipientId, iv, encryptedKey, content, type } = req.body;
-  if (!senderId || !recipientId || !iv || !encryptedKey || !content || !type) {
+  const { senderId, recipientId, iv, encryptedKey, content, type, timestamp } = req.body;
+  if (!senderId || !recipientId || !iv || !encryptedKey || !content || !type || !timestamp) {
     res.status(400).json({ error: "Missing fields" });
     return;
   }
 
   const stmt = db.prepare(`
-    INSERT INTO messages (sender_id, recipient_id, encrypted_key, iv, content, type)
-    VALUES (?, ?, ?, ?, ?, ?)
+    INSERT INTO messages (sender_id, recipient_id, encrypted_key, iv, content, type, timestamp)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
   `);
 
-  stmt.run(senderId, recipientId, Buffer.from(encryptedKey, "base64"), iv, Buffer.from(content, "base64"), type);
+  stmt.run(
+    senderId,
+    recipientId,
+    Buffer.from(encryptedKey, "base64"),
+    iv,
+    Buffer.from(content, "base64"),
+    type,
+    timestamp,
+  );
 
   res.json({ success: true });
 });

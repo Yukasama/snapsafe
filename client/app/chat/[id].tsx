@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { Box } from "@/components/ui/box";
 import { ScrollView, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform } from "react-native";
 import { Text } from "@/components/ui/text";
@@ -66,7 +66,7 @@ const MessageBubble = ({ message }: { message: Message }) => {
           message.isMe ? "bg-blue-500 rounded-br-md" : "bg-background-800 rounded-bl-md"
         }`}
       >
-        <Text className={`text-sm ${message.isMe ? "text-white" : "text-typography-white"}`}>{message.content}</Text>
+        <Text className={`text-sm ${message.isMe ? "text-white" : "text-typography-white"}`}>{message.content as string}</Text>
         <Text className={`text-xs mt-1 ${message.isMe ? "text-blue-100" : "text-typography-400"}`}>
             {formattedDate}
         </Text>
@@ -83,11 +83,10 @@ export default function ChatScreen() {
   const chat = initialChats.find((c) => c.id === parseInt(id as string));
   const { setCurrentChat, getCurrentChat, setChats } = useChats();
 
-  const hasRunOnce = useRef(false);
-  useFocusEffect(() => {
-    if (!hasRunOnce.current) {
-      hasRunOnce.current = true;
-      if (id) setCurrentChat(parseInt(id as string));
+  const clearUnreadOnBlur = useCallback(() => {
+    if (id) setCurrentChat(parseInt(id as string));
+    return () => {
+      if (!chat) return;
       setChats((prevChats) => {
         const updatedChats = prevChats.map((c) => {
           if (c.id === parseInt(id as string)) {
@@ -102,8 +101,10 @@ export default function ChatScreen() {
         });
         return updatedChats;
       });
-    }
-  });
+    };
+  }, [ id, setCurrentChat, setChats, chat ]);
+
+  useFocusEffect(clearUnreadOnBlur);
 
   if (!chat) {
     return (
@@ -115,20 +116,26 @@ export default function ChatScreen() {
 
   const sendMessage = async () => {
     if (message.trim()) {
-      console.log("Sending message:", message);
-      setMessage("");
-      const textBuffer = Uint8Array.from(atob(message), (c) => c.charCodeAt(0)).buffer;
-      const recipient = chat.username;
-      const { publicKey: recipientKey } = await getPublicKey(recipient);
-      const { encryptedContent: encryptedImage, encryptedAESKey, iv } = await encryptContent(textBuffer, recipientKey);
-      await sendEncryptedMessage({
-        senderId: username!,
-        recipientId: recipient,
-        iv,
-        encryptedKey: encryptedAESKey,
-        content: encryptedImage,
-        type: "text",
-      });
+
+      try {
+        console.log("Sending message:", message);
+        const textBuffer = new TextEncoder().encode(message.trim()).buffer as ArrayBuffer;
+        setMessage("");
+        const recipient = chat.username;
+        const { publicKey: recipientKey } = await getPublicKey(recipient);
+        const { encryptedContent: encryptedImage, encryptedAESKey, iv } = await encryptContent(textBuffer, recipientKey);
+        await sendEncryptedMessage({
+          senderId: username!,
+          recipientId: recipient,
+          iv,
+          encryptedKey: encryptedAESKey,
+          content: encryptedImage,
+          type: "text",
+          timestamp: Date.now(),
+        });
+      } catch (error) {
+        console.error("Error sending message:", error);
+      }
     }
   };
 
@@ -204,7 +211,7 @@ export default function ChatScreen() {
                 <Ionicons name="happy-outline" size={26} color="#aaa" />
               </TouchableOpacity>
               <Link href="/camera" asChild>
-                <TouchableOpacity className="ml-3" onPress={() => console.log("Open camera")}>
+                <TouchableOpacity className="ml-3">
                   <Ionicons name="camera-outline" size={26} color="#aaa" />
                 </TouchableOpacity>
               </Link>

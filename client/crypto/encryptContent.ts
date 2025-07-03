@@ -4,8 +4,6 @@ export async function encryptContent(
   data: ArrayBuffer,
   recipientPublicKey: JsonWebKey,
 ): Promise<{ encryptedContent: string; iv: string; encryptedAESKey: string }> {
-  console.debug("encryptImage called");
-
   const aesKey = crypto.getRandomValues(new Uint8Array(32));
   const iv = crypto.getRandomValues(new Uint8Array(12));
 

@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useCallback } from "react";
 import { useMockChats } from "@/config/mock-chats";
 import { getLatestEncryptedMessages } from "@/api/backend";
 import { useMessagePolling } from "@/hooks/useMessagePolling";
-import { decryptContent } from "@/crypto/decryptContent";
+import { decryptContent, decryptText } from "@/crypto/decryptContent";
 import { loadOrCreateRSAKeyPair } from "@/crypto/keyManager";
 import { useUser } from "@/context/UserContext";
 
@@ -21,7 +21,7 @@ export interface Message {
   timestamp: Date;
   isMe: boolean;
   type: "text" | "image";
-  content: string;
+  content: string | ArrayBuffer;
   unread: boolean;
 }
 
@@ -39,7 +39,9 @@ const ChatContext = createContext<ChatContextValue | null>(null);
 export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { username } = useUser();
   const initialChats = useMockChats();
-  const [currentChat, setCurrChat] = useState<Chat | null>(null);
+
+  const [currentChatId, setCurrentChatId] = useState<number|null>(null);
+
   const [chats, setChats] = useState<Chat[]>(() =>
     initialChats.map((c) => ({ ...c }))
   );
@@ -57,20 +59,15 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
   }, []);
 
-  const setCurrentChat = useCallback((id: number | null) => {
-    if (id === null) {
-      setCurrChat(null);
-      return;
-    }
-    const chat = getChatById(id);
-    if (chat) {
-      setCurrChat(chat);
-    }
-  }, [getChatById]);
+  const setCurrentChat = useCallback((id: number|null) => {
+    setCurrentChatId(id);
+  }, []);
 
   const getCurrentChat = useCallback(() => {
-    return currentChat;
-  }, [currentChat]);
+    return currentChatId === null
+      ? null
+      : chats.find(c => c.id === currentChatId) ?? null;
+  }, [chats, currentChatId]);
 
   useMessagePolling(async () => {
     if (!username) return;
@@ -79,13 +76,23 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!messages?.length) return;
     const { privateKey } = await loadOrCreateRSAKeyPair();
 
-    for (const message of messages) {
-      const decryptedMessage = await decryptContent(
-        message.content,
-        message.encryptedKey,
-        message.iv,
-        privateKey
-      );
+    for (const message of messages.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())) {
+      let decryptedMessage;
+      if (message.type === "image") {
+        decryptedMessage = await decryptContent(
+          message.content,
+          message.encryptedKey,
+          message.iv,
+          privateKey
+        );
+      } else {
+        decryptedMessage = await decryptText(
+          message.content,
+          message.encryptedKey,
+          message.iv,
+          privateKey
+        );
+      }
 
       setChats((prev) => {
         const existingChat = prev.find((chat) => chat.username === message.from);
@@ -99,7 +106,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
                     ...(chat.messages || []),
                     {
                       id: Date.now(),
-                      timestamp: new Date(),
+                      timestamp: new Date(message.timestamp),
                       isMe: chat.username === username,
                       type: message.type,
                       content: decryptedMessage,
@@ -122,7 +129,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
               messages: [
                 {
                   id: Date.now(),
-                  timestamp: new Date(),
+                  timestamp: new Date(message.timestamp),
                   isMe: false,
                   type: message.type,
                   content: decryptedMessage,
