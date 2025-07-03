@@ -95,7 +95,6 @@ export default function ContactSelectionScreen() {
 
       for (const contactId of selectedContacts) {
         console.debug(`Searching for Chat with ContactId: ${contactId}}`)
-        console.log(`Chats: ${chats[0].id} `)
         const recipient = chats.find((c) => c.id === contactId);
         if (!recipient) continue;
 
