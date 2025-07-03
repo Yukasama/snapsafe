@@ -172,20 +172,22 @@ export default function ChatScreen() {
           type: "text",
           timestamp: Date.now(),
         });
-        updateChat(parseInt(id as string), {
-          ...chat,
-          messages: [
-            ...chat.messages,
-            {
-              id: Date.now(),
-              content: message.trim(),
-              type: "text",
-              isMe: true,
-              timestamp: new Date(),
-              unread: false,
-            },
-          ],
-        });
+        if (chat.id !== 1) {
+          updateChat(parseInt(id as string), {
+            ...chat,
+            messages: [
+              ...chat.messages,
+              {
+                id: Date.now(),
+                content: message.trim(),
+                type: "text",
+                isMe: true,
+                timestamp: new Date(),
+                unread: false,
+              },
+            ],
+          });
+        }
       } catch (error) {
         console.error("Error sending message:", error);
       }
@@ -218,12 +220,6 @@ export default function ChatScreen() {
             </Box>
 
             <Box className="flex-row gap-4">
-              <TouchableOpacity className="mr-0.5">
-                <Ionicons name="call-outline" size={24} color="#fff" />
-              </TouchableOpacity>
-              <TouchableOpacity>
-                <Ionicons name="videocam-outline" size={24} color="#fff" />
-              </TouchableOpacity>
               <TouchableOpacity>
                 <MaterialCommunityIcons name="dots-vertical" className="-space-y-0.5" size={24} color="#fff" />
               </TouchableOpacity>
