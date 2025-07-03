@@ -1,6 +1,6 @@
 # Snapsafe
 
-![./client/assets/images/logo.png](./client/assets/images/icon.png)
+<img src="./client/assets/images/icon.png" alt="Snapsafe Logo" width="300" />
 
 Snapsafe is a secure, end-to-end encrypted messaging app designed to protect your privacy. It uses advanced encryption techniques to ensure that your messages are only accessible to you and the intended recipients.
 
