@@ -172,7 +172,6 @@ const ToastTitle = React.forwardRef<
     useStyleContext(SCOPE);
   React.useEffect(() => {
     // Issue from react-native side
-    // Hack for now, will fix this later
     AccessibilityInfo.announceForAccessibility(children as string);
   }, [children]);
 
