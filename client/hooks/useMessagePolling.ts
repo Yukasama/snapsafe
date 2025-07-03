@@ -4,7 +4,7 @@ export function useMessagePolling(fetchMessages: () => void) {
   useEffect(() => {
     const intervalId = setInterval(() => {
       fetchMessages();
-    }, 15000); // 15 seconds
+    }, 5000);
 
     return () => clearInterval(intervalId); // cleanup on unmount
   }, [fetchMessages]);
