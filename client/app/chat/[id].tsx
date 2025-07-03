@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Box } from "@/components/ui/box";
 import { ScrollView, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform } from "react-native";
 import { Text } from "@/components/ui/text";
@@ -83,8 +83,13 @@ export default function ChatScreen() {
   const chat = initialChats.find((c) => c.id === parseInt(id as string));
   const { setCurrentChat, getCurrentChat, setChats } = useChats();
 
+  useEffect(() => {
+    if (id) {
+      setCurrentChat(parseInt(id as string));
+    }
+  }, [id, setCurrentChat]);
+
   const clearUnreadOnBlur = useCallback(() => {
-    if (id) setCurrentChat(parseInt(id as string));
     return () => {
       if (!chat) return;
       setChats((prevChats) => {
