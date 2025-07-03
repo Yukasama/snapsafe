@@ -115,7 +115,6 @@ export default function PhotoEditorScreen() {
 
         tx.value = x;
         ty.value = y;
-        // Only primitives go over the bridge:
         runOnJS(updateStickerPosition)(sticker.id, x, y);
         sc.value = withSpring(sticker.scale);
         runOnJS(setOverTrashGlobal)(false);
