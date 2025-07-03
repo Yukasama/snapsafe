@@ -5,7 +5,7 @@ import { Text } from "@/components/ui/text";
 import { useLocalSearchParams, router, Link, useFocusEffect } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import { useMockChats } from "@/config/mock-chats";
+import { getMockChats } from "@/config/mock-chats";
 import { Message, useChats } from "@/context/ChatContext";
 import { getPublicKey, sendEncryptedMessage } from "@/api/backend";
 import { encryptContent } from "@/crypto/encryptContent";
@@ -77,7 +77,7 @@ const MessageBubble = ({ message }: { message: Message }) => {
 
 export default function ChatScreen() {
   const { username } = useUser();
-  const initialChats = useMockChats();
+  const initialChats = getMockChats();
   const { id } = useLocalSearchParams();
   const [message, setMessage] = useState("");
   const chat = initialChats.find((c) => c.id === parseInt(id as string));

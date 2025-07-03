@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useMemo } from "react";
-import { useMockChats } from "@/config/mock-chats";
+import { getMockChats } from "@/config/mock-chats";
 import { getLatestEncryptedMessages } from "@/api/backend";
 import { useMessagePolling } from "@/hooks/useMessagePolling";
 import { decryptContent, decryptText } from "@/crypto/decryptContent";
@@ -38,7 +38,7 @@ const ChatContext = createContext<ChatContextValue | null>(null);
 
 export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { username } = useUser();
-  const initialChats = useMockChats();
+  const initialChats = getMockChats();
 
   const [currentChatId, setCurrentChatId] = useState<number | null>(null);
 
