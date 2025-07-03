@@ -56,7 +56,7 @@ export default function Home() {
   };
 
   const ProfileDropdown = () => (
-    <Box className="absolute top-20 left-4 bg-background-800 rounded-lg border border-outline-700 shadow-lg z-50">
+    <Box className="absolute top-[9rem] left-4 bg-background-800 rounded-lg border border-outline-700 shadow-lg z-50">
       <TouchableOpacity
         onPress={() => {
           setShowProfileDropdown(false);
