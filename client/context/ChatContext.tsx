@@ -38,7 +38,7 @@ const ChatContext = createContext<ChatContextValue | null>(null);
 
 export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
-  const [currentChat, setCurrChat] = useState<Chat | null>(null);
+  const [currentChatId, setCurrentChatId] = useState<number|null>(null);
 
   const [chats, setChats] = useState<Chat[]>(() =>
     mockChats.map((c) => ({ ...c }))
@@ -56,20 +56,15 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
   }, []);
 
-  const setCurrentChat = useCallback((id: number | null) => {
-    if (id === null) {
-      setCurrChat(null);
-      return;
-    }
-    const chat = getChatById(id);
-    if (chat) {
-      setCurrChat(chat);
-    }
-  }, [getChatById]);
+  const setCurrentChat = useCallback((id: number|null) => {
+    setCurrentChatId(id);
+  }, []);
 
   const getCurrentChat = useCallback(() => {
-    return currentChat;
-  }, [currentChat]);
+    return currentChatId === null
+      ? null
+      : chats.find(c => c.id === currentChatId) ?? null;
+  }, [chats, currentChatId]);
 
   useMessagePolling(async () => {
     const messages = await getLatestEncryptedMessages(config.username);

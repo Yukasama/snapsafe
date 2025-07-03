@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { Box } from "@/components/ui/box";
 import { ScrollView, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform } from "react-native";
 import { Text } from "@/components/ui/text";
@@ -81,11 +81,10 @@ export default function ChatScreen() {
   const { setCurrentChat, getCurrentChat, setChats } = useChats();
   const chat = mockChats.find((c) => c.id === parseInt(id as string));
 
-  const hasRunOnce = useRef(false);
-  useFocusEffect(() => {
-    if (!hasRunOnce.current) {
-      hasRunOnce.current = true;
-      if (id) setCurrentChat(parseInt(id as string));
+  const clearUnreadOnBlur = useCallback(() => {
+    if (id) setCurrentChat(parseInt(id as string));
+    return () => {
+      if (!chat) return;
       setChats((prevChats) => {
         const updatedChats = prevChats.map((c) => {
           if (c.id === parseInt(id as string)) {
@@ -100,8 +99,10 @@ export default function ChatScreen() {
         });
         return updatedChats;
       });
-    }
-  });
+    };
+  }, [ id, setCurrentChat, setChats, chat ]);
+
+  useFocusEffect(clearUnreadOnBlur);
 
   if (!chat) {
     return (
