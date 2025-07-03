@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useCallback } from "react";
 import { mockChats } from "@/config/mock-chats";
 import { getLatestEncryptedMessages } from "@/api/backend";
 import { useMessagePolling } from "@/hooks/useMessagePolling";
-import { decryptContentRaw, decryptText } from "@/crypto/decryptContent";
+import { decryptContent, decryptText } from "@/crypto/decryptContent";
 import { loadOrCreateRSAKeyPair } from "@/crypto/keyManager";
 import { config } from "@/config/config";
 
@@ -74,7 +74,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
     for (const message of messages.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())) {
       let decryptedMessage;
       if (message.type === "image") {
-        decryptedMessage = await decryptContentRaw(
+        decryptedMessage = await decryptContent(
           message.content,
           message.encryptedKey,
           message.iv,

@@ -208,7 +208,7 @@ export default function ChatScreen() {
                 <Ionicons name="happy-outline" size={26} color="#aaa" />
               </TouchableOpacity>
               <Link href="/camera" asChild>
-                <TouchableOpacity className="ml-3" onPress={() => console.log("Open camera")}>
+                <TouchableOpacity className="ml-3">
                   <Ionicons name="camera-outline" size={26} color="#aaa" />
                 </TouchableOpacity>
               </Link>
