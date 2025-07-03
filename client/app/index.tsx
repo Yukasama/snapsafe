@@ -1,15 +1,14 @@
-import React, { useState, useMemo, useRef } from "react";
+import React, { useState, useMemo } from "react";
 import { Box } from "@/components/ui/box";
 import { ScrollView, TouchableOpacity, TextInput } from "react-native";
 import { Text } from "@/components/ui/text";
-import { Link } from "expo-router";
-import { useRouter } from "expo-router";
+import { Link, useRouter, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { ChatItem } from "@/components/ChatItem";
 import { useChats } from "@/context/ChatContext";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useFocusEffect } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { useUser } from "@/context/UserContext";
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -18,10 +17,10 @@ export default function Home() {
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const router = useRouter();
   const { chats, setChats, setCurrentChat } = useChats();
+  const { displayName } = useUser();
 
   useFocusEffect(
     React.useCallback(() => {
-      // This function is now available from the updated context
       if (setCurrentChat) {
         setCurrentChat(null);
       }
@@ -31,14 +30,17 @@ export default function Home() {
   const filteredChats = useMemo(() => {
     if (!searchQuery.trim()) return chats;
 
-    return chats.filter(
-      (chat) =>
-        chat.name.toLowerCase().includes(searchQuery.toLowerCase())
+    return chats.filter((chat) =>
+      chat.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [chats, searchQuery]);
 
+  const profileInitial = displayName ? displayName.charAt(0).toUpperCase() : "A"; // 3. Get the first initial
+
   const handleToggleSelect = (chatId: number) => {
-    setSelectedChats((prev) => (prev.includes(chatId) ? prev.filter((id) => id !== chatId) : [...prev, chatId]));
+    setSelectedChats((prev) =>
+      prev.includes(chatId) ? prev.filter((id) => id !== chatId) : [...prev, chatId]
+    );
   };
 
   const handleDeleteSelected = () => {
@@ -100,7 +102,7 @@ export default function Home() {
             <>
               <TouchableOpacity onPress={() => setShowProfileDropdown(!showProfileDropdown)}>
                 <Box className="w-10 h-10 rounded-full bg-blue-500 items-center justify-center">
-                  <Text className="text-white font-bold text-lg">J</Text>
+                  <Text className="text-white font-bold text-lg">{profileInitial}</Text>
                 </Box>
               </TouchableOpacity>
 
