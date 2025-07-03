@@ -17,8 +17,6 @@ const menuItemStyle = tva({
 
 const menuBackdropStyle = tva({
   base: 'absolute top-0 bottom-0 left-0 right-0 web:cursor-default',
-  // add this classnames if you want to give background color to backdrop
-  // opacity-50 bg-background-500,
 });
 
 const menuSeparatorStyle = tva({
