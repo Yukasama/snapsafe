@@ -57,7 +57,7 @@ const MessageBubble = ({ message, chatId }: { message: Message, chatId: number }
           <Box className={`flex-row mb-3 ${message.isMe ? "justify-end" : "justify-start"}`}>
             <Box
               className={`max-w-[80%] px-4 py-2 rounded-2xl ${
-                message.isMe ? "bg-blue-500 rounded-br-md" : "bg-background-800 rounded-bl-md"
+                message.isMe ? "bg-blue-500 rounded-br-md" : "bg-zinc-800 rounded-bl-md"
               }`}
             >
               <Box className="flex-row items-center gap-2">
@@ -78,7 +78,7 @@ const MessageBubble = ({ message, chatId }: { message: Message, chatId: number }
         <Box className={`flex-row mb-3 ${message.isMe ? "justify-end" : "justify-start"}`}>
           <Box
             className={`max-w-[80%] px-4 py-2 rounded-2xl ${
-              message.isMe ? "bg-blue-500 rounded-br-md" : "bg-background-800 rounded-bl-md"
+              message.isMe ? "bg-blue-500 rounded-br-md" : "bg-zinc-800 rounded-bl-md"
              }`}
           >
             <Box className="flex-row items-center gap-2">
@@ -99,7 +99,7 @@ const MessageBubble = ({ message, chatId }: { message: Message, chatId: number }
     <Box className={`flex-row mb-3 ${message.isMe ? "justify-end" : "justify-start"}`}>
       <Box
         className={`max-w-[80%] px-4 py-2 rounded-2xl ${
-          message.isMe ? "bg-blue-500 rounded-br-md" : "bg-background-800 rounded-bl-md"
+          message.isMe ? "bg-blue-500 rounded-br-md" : "bg-zinc-800 rounded-bl-md"
         }`}
       >
         <Text className={`text-sm ${message.isMe ? "text-white" : "text-typography-white"}`}>{message.content as string}</Text>
@@ -247,7 +247,7 @@ export default function ChatScreen() {
               <Ionicons name="attach" size={26} color="#aaa" />
             </TouchableOpacity>
 
-            <Box className="flex-1 flex-row items-center bg-background-800 rounded-full px-3" style={{ minHeight: 40 }}>
+            <Box className="flex-1 flex-row items-center bg-zinc-800 rounded-full px-3" style={{ minHeight: 40 }}>
               <TextInput
                 className="flex-1 text-typography-white text-base outline-none h-[29px]"
                 placeholder="Type a message..."
