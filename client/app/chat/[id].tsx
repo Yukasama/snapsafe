@@ -253,6 +253,7 @@ export default function ChatScreen() {
                 value={message}
                 onChangeText={setMessage}
                 multiline
+                autoCorrect={false}
                 maxLength={1000}
                 style={{
                   paddingVertical: 1,

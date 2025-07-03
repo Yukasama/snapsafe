@@ -18,6 +18,9 @@ export const ChatItem = ({
   onToggleSelect: (id: number) => void;
   onDelete: (id: number) => void;
 }) => {
+  const hasUnreadImages = chat.messages.some(
+    (msg) => msg.type === "image" && msg.unread
+  );
   const router = useRouter();
   const handleDelete = () => {
     Alert.alert("Delete Chat", `Are you sure you want to delete the chat with ${chat.name}?`, [
@@ -30,8 +33,8 @@ export const ChatItem = ({
     ]);
   };
 
-  const handlePress = () => {
-    if (chat.messages && chat.messages.filter((msg) => msg.type === "image" && msg.unread).length > 0) {
+  const handleAvatarPress = () => {
+    if (hasUnreadImages) {
       // Navigate to the photo viewer with the latest unread image
       router.push({
         pathname: "/view-photo",
@@ -42,6 +45,10 @@ export const ChatItem = ({
     } else {
       router.push(`/chat/${chat.id}`);
     }
+  };
+
+  const handleChatPress = () => {
+    router.push(`/chat/${chat.id}`);
   };
 
   const renderRightActions = () => (
@@ -133,16 +140,22 @@ export const ChatItem = ({
 
   return (
     <Swipeable renderRightActions={renderRightActions}>
-      <TouchableOpacity onPress={handlePress}>
+      <TouchableOpacity onPress={handleChatPress}>
         <Box className="flex-row items-center p-4 border-b border-outline-700 bg-black">
-          <Box className="relative">
-            <Box className="w-12 h-12 rounded-full bg-background-200 items-center justify-center">
-              <Text className="text-2xl">{chat.avatar}</Text>
+          <TouchableOpacity
+            className={`w-[3.75rem] h-[3.75rem] rounded-full border-2 items-center justify-center mr-3 ${
+              hasUnreadImages ? "bg-blue-500 border-blue-500" : "border-typography-400"
+            }`}
+            onPress={handleAvatarPress}>
+            <Box className="relative">
+                <Box className="w-12 h-12 rounded-full bg-background-200 items-center justify-center">
+                  <Text className="text-2xl">{chat.avatar}</Text>
+                </Box>
+              {chat.isOnline && (
+                <Box className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-black" />
+              )}
             </Box>
-            {chat.isOnline && (
-              <Box className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-black" />
-            )}
-          </Box>
+          </TouchableOpacity>
 
           <Box className="flex-1 ml-3">
             <Box className="flex-row justify-between items-center">
