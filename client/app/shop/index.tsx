@@ -5,6 +5,7 @@ import { TouchableOpacity, ScrollView, Alert } from "react-native";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
+import { StatusBar } from "expo-status-bar";
 
 interface StickerPack {
   id: string;
@@ -152,6 +153,7 @@ export default function ShopScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-black">
+      <StatusBar style="light" />
       <Box className="flex-1">
         <Box className="flex-row justify-between items-center p-4 border-b border-outline-700">
           <TouchableOpacity onPress={() => router.back()}>

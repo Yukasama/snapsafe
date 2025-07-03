@@ -9,6 +9,7 @@ import { Message, useChats } from "@/context/ChatContext";
 import { getPublicKey, sendEncryptedMessage } from "@/api/backend";
 import { encryptContent } from "@/crypto/encryptContent";
 import { useUser } from "@/context/UserContext";
+import { StatusBar } from "expo-status-bar";
 
 const MessageBubble = ({ message, chatId }: { message: Message, chatId: number }) => {
   const timestamp = message.timestamp || new Date();
@@ -193,6 +194,7 @@ export default function ChatScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-black">
+      <StatusBar style="light" />
       <KeyboardAvoidingView className="flex-1" behavior={Platform.OS === "ios" ? "padding" : "height"}>
         {/* Header */}
         <Box className="bg-black px-4 py-3 border-b border-outline-700">

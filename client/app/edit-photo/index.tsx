@@ -8,6 +8,7 @@ import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, { useAnimatedStyle, useSharedValue, runOnJS, withSpring, clamp } from "react-native-reanimated";
 import { Ionicons } from "@expo/vector-icons";
 import { captureRef } from "react-native-view-shot";
+import { StatusBar } from "expo-status-bar";
 
 const { width, height } = Dimensions.get("window");
 
@@ -184,6 +185,7 @@ export default function PhotoEditorScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-black">
+      <StatusBar style="light" />
       <Box className="flex-1">
         <Box className="absolute top-0 left-0 right-0 z-10">
           <Box className="flex-row justify-between items-center p-4">

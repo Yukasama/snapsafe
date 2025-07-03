@@ -5,6 +5,7 @@ import { Text } from "@/components/ui/text";
 import { Box } from "@/components/ui/box";
 import { useUser } from "@/context/UserContext";
 import { useLocalSearchParams } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 
 export default function VerificationScreen() {
   const { signIn } = useUser();
@@ -25,6 +26,7 @@ export default function VerificationScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-black">
+      <StatusBar style="light" />
       <View className="flex-1 justify-center p-8">
         <Text className="text-white text-3xl font-bold text-center mb-4">
           Enter Code

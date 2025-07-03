@@ -10,6 +10,7 @@ import { useUser } from "@/context/UserContext";
 import { encryptContent } from "@/crypto/encryptContent";
 import { sendEncryptedMessage, getPublicKey } from "@/api/backend";
 import { Chat, useChats } from "@/context/ChatContext";
+import { StatusBar } from "expo-status-bar";
 
 
 const ContactItem = ({
@@ -140,6 +141,7 @@ export default function ContactSelectionScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-black">
+      <StatusBar style="light" />
       <Box className="flex-1">
         <Box className="flex-row justify-between items-center p-4 border-b border-outline-700">
           <TouchableOpacity onPress={() => router.back()}>

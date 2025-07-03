@@ -9,6 +9,7 @@ import { ChatItem } from "@/components/ChatItem";
 import { useChats } from "@/context/ChatContext";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useFocusEffect } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -80,6 +81,7 @@ export default function Home() {
 
   return (
     <SafeAreaView className="flex-1 bg-black">
+      <StatusBar style="light" />
       <Box className="bg-black pt-4 pb-4 px-5 border-b border-outline-700">
         <Box className="flex-row justify-between items-center mb-4">
           {isEditMode ? (

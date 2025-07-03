@@ -6,6 +6,7 @@ import { CameraView, CameraType, useCameraPermissions } from "expo-camera";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { StatusBar } from "expo-status-bar";
 
 export default function CameraScreen() {
   const [facing, setFacing] = useState<CameraType>("back");
@@ -70,6 +71,7 @@ export default function CameraScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-black">
+      <StatusBar style="light" />
       <CameraView ref={cameraRef} style={{ flex: 1 }} facing={facing}>
         <SafeAreaView>
           <Box className="absolute top-0 left-0 right-0 z-10">
