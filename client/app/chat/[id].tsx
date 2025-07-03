@@ -50,7 +50,6 @@ const MessageBubble = ({ message, chatId }: { message: Message, chatId: number }
   };
 
   if (message.type === "image") {
-    console.log("Rendering image message bubble", message);
     if (message.unread) {
       return (
         <TouchableOpacity onPress={handlePress}>
@@ -63,7 +62,7 @@ const MessageBubble = ({ message, chatId }: { message: Message, chatId: number }
               <Box className="flex-row items-center gap-2">
                 <Ionicons name="eye" size={16} color={message.isMe ? "white" : "#aaa"} />
                 <Text className={`text-sm italic ${message.isMe ? "text-white" : "text-typography-white"}`}>
-                  Photo received
+                  {message.isMe ? "Photo sent" : "Photo received"}
                 </Text>
               </Box>
               <Text className={`text-xs mt-1 ${message.isMe ? "text-blue-100" : "text-typography-400"}`}>
@@ -84,7 +83,7 @@ const MessageBubble = ({ message, chatId }: { message: Message, chatId: number }
             <Box className="flex-row items-center gap-2">
               <Ionicons name="reader" size={16} color={message.isMe ? "white" : "#aaa"} />
               <Text className={`text-sm italic ${message.isMe ? "text-white" : "text-typography-white"}`}>
-                Photo received
+                {message.isMe ? "Photo sent" : "Photo received"}
               </Text>
             </Box>
             <Text className={`text-xs mt-1 ${message.isMe ? "text-blue-100" : "text-typography-400"}`}>
@@ -157,7 +156,6 @@ export default function ChatScreen() {
   const sendMessage = async () => {
     if (message.trim()) {
       try {
-        console.log("Sending message:", message);
         const textBuffer = new TextEncoder().encode(message.trim()).buffer as ArrayBuffer;
         setMessage("");
         const recipient = chat.username;
