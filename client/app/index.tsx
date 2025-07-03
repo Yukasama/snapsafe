@@ -18,6 +18,8 @@ export default function Home() {
   const router = useRouter();
   const { chats, setChats, setCurrentChat } = useChats();
 
+  console.log("CHAT CHAT chats:", chats);
+
   useFocusEffect(
     React.useCallback(() => {
       // This function is now available from the updated context

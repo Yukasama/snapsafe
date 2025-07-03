@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useMemo } from "react";
-import { getMockChats } from "@/config/mock-chats";
+import { getInitialChats, initialChats } from "@/config/mock-chats";
 import { getLatestEncryptedMessages } from "@/api/backend";
 import { useMessagePolling } from "@/hooks/useMessagePolling";
 import { decryptContent, decryptText } from "@/crypto/decryptContent";
@@ -37,13 +37,27 @@ interface ChatContextValue {
 const ChatContext = createContext<ChatContextValue | null>(null);
 
 export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { username } = useUser();
-  const initialChats = getMockChats();
+  const { username, isLoading } = useUser();
+
+  if (isLoading || !username) return;
 
   const [currentChatId, setCurrentChatId] = useState<number | null>(null);
 
-  const [chats, setChats] = useState<Chat[]>(() =>
-    initialChats.map((c) => ({ ...c }))
+  const [chats, setChats] = useState<Chat[]>(
+    initialChats
+    .map(c => {
+      if (c.id === 1) {
+          console.log(c)
+        return {
+          ...c,
+          username: username || "hasrun",
+        } as Chat;
+      } else {
+        return c;
+      }
+    })
+    .filter(c => c.id === 1 || c.username !== username)
+    .map((c) => ({ ...c }))
   );
 
   const getChatById = useCallback(
