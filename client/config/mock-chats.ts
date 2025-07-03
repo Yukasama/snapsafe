@@ -39,7 +39,7 @@ export const initialChats: Chat[] = [
   },
   {
     id: 2,
-    name: "Sarah Wilson",
+    name: "Christopher Claus",
     unreadCount: 0,
     avatar: "👩‍🎨",
     isOnline: true,
@@ -83,7 +83,7 @@ export const initialChats: Chat[] = [
   },
   {
     id: 5,
-    name: "Alex Johnson",
+    name: "Hung",
     unreadCount: 0,
     avatar: "👨‍💻",
     isOnline: false,
@@ -108,34 +108,8 @@ export const initialChats: Chat[] = [
     ],
   },
   {
-    id: 6,
-    name: "Emma Davis",
-    unreadCount: 0,
-    avatar: "👩‍🦰",
-    isOnline: true,
-    username: "",
-    messages: [
-      {
-        id: 1,
-        content: "Can't wait! It's going to be so much fun.",
-        timestamp: new Date("2025-07-02T09:00:00Z"),
-        isMe: false,
-        type: "text",
-        unread: false,
-      },
-      {
-        id: 2,
-        content: "I'll bring the drinks!",
-        timestamp: new Date("2025-07-02T09:05:00Z"),
-        isMe: true,
-        type: "text",
-        unread: false,
-      },
-    ],
-  },
-  {
     id: 7,
-    name: "Marius M",
+    name: "Marius",
     unreadCount: 0,
     avatar: "👩‍🦰",
     isOnline: true,
@@ -161,7 +135,7 @@ export const initialChats: Chat[] = [
   },
   {
     id: 8,
-    name: "AFa",
+    name: "Antonin",
     unreadCount: 0,
     avatar: "👩‍🦰",
     isOnline: true,
