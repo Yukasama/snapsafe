@@ -6,20 +6,20 @@ import { Box } from "@/components/ui/box";
 import { useUser } from "@/context/UserContext";
 import { StatusBar } from "expo-status-bar";
 
-export default function SetUsernameScreen() {
-  const { signIn } = useUser();
-  const [username, setUsername] = useState("");
+export default function SetDisplayNameScreen() {
+  const { setDisplayName } = useUser();
+  const [displayName, setDisplayNameState] = useState("");
 
   const handleContinue = async () => {
-    const trimmedUsername = username.trim();
-    if (trimmedUsername.length < 3) {
+    const trimmedName = displayName.trim();
+    if (trimmedName.length < 3) {
       Alert.alert(
-        "Invalid Username",
-        "Your username must be at least 3 characters long."
+        "Invalid Name",
+        "Your display name must be at least 3 characters long."
       );
       return;
     }
-    await signIn(trimmedUsername);
+    await setDisplayName(trimmedName);
   };
 
   return (
@@ -27,15 +27,15 @@ export default function SetUsernameScreen() {
       <StatusBar style="light" />
       <View className="flex-1 justify-center p-8">
         <Text className="text-white text-3xl font-bold text-center mb-8">
-          Choose a Username
+          Choose a Display Name
         </Text>
         <Box className="bg-gray-800 rounded-lg p-4 mb-6">
           <TextInput
             className="text-white text-lg text-center"
             placeholder="e.g., SnapMaster"
             placeholderTextColor="#666666"
-            value={username}
-            onChangeText={setUsername}
+            value={displayName}
+            onChangeText={setDisplayNameState}
             autoFocus={true}
             onSubmitEditing={handleContinue}
           />
@@ -43,8 +43,8 @@ export default function SetUsernameScreen() {
         <TouchableOpacity
           onPress={handleContinue}
           className="bg-blue-600 p-4 rounded-lg"
-          disabled={username.trim().length < 3}
-          style={{ opacity: username.trim().length < 3 ? 0.5 : 1 }}
+          disabled={displayName.trim().length < 3}
+          style={{ opacity: displayName.trim().length < 3 ? 0.5 : 1 }}
         >
           <Text className="text-white text-center text-lg font-bold">
             Continue

@@ -16,6 +16,7 @@ interface UserContextType {
   username: string | null;
   displayName: string | null;
   isLoading: boolean;
+  setUsername: (newUsername: string) => Promise<void>;
   signIn: (newUsername: string) => Promise<void>;
   signOut: () => void;
   setDisplayName: (newDisplayName: string) => Promise<void>;
@@ -24,7 +25,7 @@ interface UserContextType {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function UserProvider({ children }: { children: ReactNode }) {
-  const [username, setUsername] = useState<string | null>(null);
+  const [username, setUsernameState] = useState<string | null>(null);
   const [displayName, setDisplayNameState] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -33,7 +34,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       try {
         const storedUser = await getUsername();
         const storedDisplayName = await getDisplayName();
-        setUsername(storedUser);
+        setUsernameState(storedUser);
         setDisplayNameState(storedDisplayName);
       } catch (e) {
         console.error("Failed to load user data:", e);
@@ -44,9 +45,14 @@ export function UserProvider({ children }: { children: ReactNode }) {
     checkUser();
   }, []);
 
+  const setUsername = async (newUsername: string) => {
+    await saveData(newUsername, displayName);
+    setUsernameState(newUsername);
+  };
+
   const signIn = async (newUsername: string) => {
     await saveData(newUsername, displayName);
-    setUsername(newUsername);
+    setUsernameState(newUsername);
   };
 
   const setDisplayName = async (newDisplayName: string) => {
@@ -56,7 +62,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   const signOut = async () => {
     await clearData();
-    setUsername(null);
+    setUsernameState(null);
     setDisplayNameState(null);
   };
 
@@ -66,6 +72,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         username,
         displayName,
         isLoading,
+        setUsername,
         signIn,
         signOut,
         setDisplayName,

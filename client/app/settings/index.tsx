@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Box } from "@/components/ui/box";
 import { Text } from "@/components/ui/text";
 import { TouchableOpacity, TextInput, ScrollView } from "react-native";
@@ -10,26 +10,8 @@ import { StatusBar } from "expo-status-bar";
 
 export default function SettingsScreen() {
   const router = useRouter();
-  const [name, setName] = useState("John Doe");
-  const { username, signOut } = useUser();
+  const { username, displayName, signOut } = useUser();
   const [themeMode, setThemeMode] = useState<"light" | "dark" | "system">("system");
-  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-
-  const handleSaveName = () => {
-    // Show success message
-    setShowSuccessMessage(true);
-  };
-
-  // Hide the success message after a few seconds
-  useEffect(() => {
-    if (showSuccessMessage) {
-      const timer = setTimeout(() => {
-        setShowSuccessMessage(false);
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [showSuccessMessage]);
-
 
   const handleSignOut = async () => {
     signOut();
@@ -69,7 +51,7 @@ export default function SettingsScreen() {
               <Box className="items-center mb-6">
                 <Box className="w-24 h-24 rounded-full bg-blue-500 items-center justify-center mb-3">
                   <Text className="text-white text-3xl font-bold">
-                    {name
+                    {(displayName || "A")
                       .split(" ")
                       .map((n) => n[0])
                       .join("")
@@ -86,18 +68,12 @@ export default function SettingsScreen() {
                 <Box className="bg-zinc-800 rounded-lg p-4 flex-row items-center">
                   <TextInput
                     className="flex-1 text-typography-white text-base outline-none"
-                    value={name}
-                    onChangeText={setName}
-                    placeholder="Enter your name"
+                    value={displayName || ""}
+                    placeholder="No display name set"
                     placeholderTextColor="#666666"
+                    editable={false}
                   />
-                  <TouchableOpacity onPress={handleSaveName} className="ml-3">
-                    <Text className="text-blue-500 font-medium">Save</Text>
-                  </TouchableOpacity>
                 </Box>
-                 {showSuccessMessage && (
-                    <Text className="text-green-500 text-sm mt-2">Name updated successfully!</Text>
-                )}
               </Box>
 
               <Box className="mb-6">

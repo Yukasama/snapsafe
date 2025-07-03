@@ -13,15 +13,13 @@ import { initCrypto } from "@/crypto/initCrypto";
 import { ChatProvider } from '@/context/ChatContext';
 import { UserProvider, useUser } from "@/context/UserContext";
 import { ActivityIndicator, Alert } from 'react-native';
-import { Box } from '@/components/ui/box';
-import { Text } from '@/components/ui/text';
 
 export { ErrorBoundary } from "expo-router";
 
 SplashScreen.preventAutoHideAsync();
 
 const AppLayout = () => {
-  const { username, isLoading } = useUser();
+  const { username, displayName, isLoading } = useUser();
   const [isCryptoReady, setCryptoReady] = useState(false);
   const router = useRouter();
   const segments = useSegments();
@@ -55,18 +53,16 @@ const AppLayout = () => {
     const inAuthGroup = segments[0] === 'login';
 
     if (!username && !inAuthGroup) {
-      // If user is not signed in and not in auth group, redirect to login.
       router.replace('/login');
-    } else if (username && isCryptoReady && inAuthGroup) {
-      // If user is signed in, crypto is ready, and they are in the auth group,
-      // redirect them to the main app.
+    } 
+    else if (username && displayName && isCryptoReady && inAuthGroup) {
       router.replace('/');
     }
-  }, [username, segments, isLoading, fontsLoaded, isCryptoReady, router]);
+  }, [username, displayName, segments, isLoading, fontsLoaded, isCryptoReady, router]);
 
   return (
       <Stack screenOptions={{ headerShown: false, animation: "slide_from_right" }}>
-        <Stack.Screen name="login/index" options={{ gestureEnabled: false }} />
+        <Stack.Screen name="login" options={{ headerShown: false }} />
         <Stack.Screen name="index" />
         <Stack.Screen name="view-photo/index" />
         <Stack.Screen name="camera/index" />
