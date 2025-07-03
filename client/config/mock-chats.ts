@@ -163,7 +163,7 @@ export const getMockChats = (): Chat[] => {
     },
     {
       id: 8,
-      name: "AFa",
+      name: "Antonin F",
       unreadCount: 0,
       avatar: "👩‍🦰",
       isOnline: true,
