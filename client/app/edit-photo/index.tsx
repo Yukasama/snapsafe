@@ -155,6 +155,7 @@ export default function PhotoEditorScreen() {
   };
 
   const navigateToContacts = async () => {
+    console.log("Navigate to Contacts button pressed!");
     try {
       const flattenedUri = await captureRef(photoCanvasRef, {
         format: "png",
@@ -163,7 +164,7 @@ export default function PhotoEditorScreen() {
 
       router.push({
         pathname: "/select-contacts",
-        params: { imageUri: flattenedUri }, // sticker JSON no longer needed
+        params: { imageUri: flattenedUri },
       });
     } catch (error) {
       console.warn("Could not capture image", error);
@@ -230,23 +231,20 @@ export default function PhotoEditorScreen() {
           </Box>
         )}
 
-        <Box className="absolute bottom-6 right-6" pointerEvents="box-none">
-          <View pointerEvents="auto">
-            <TouchableOpacity onPress={navigateToContacts} activeOpacity={0.8}>
-              <Box
-                className="w-14 h-14 bg-blue-500 rounded-full items-center justify-center shadow-lg border-2 border-blue-400"
-                style={{
-                  width: 56,
-                  height: 56,
-                  bottom: BOTTOM_CONTROLS_HEIGHT + 20,
-                  right: 20,
-                }}
-              >
-                <Ionicons name="arrow-forward" size={24} color="white" />
-              </Box>
-            </TouchableOpacity>
-          </View>
-        </Box>
+        <TouchableOpacity
+          onPress={navigateToContacts}
+          activeOpacity={0.8}
+          style={{
+            position: "absolute",
+            bottom: BOTTOM_CONTROLS_HEIGHT + 20,
+            right: 20,
+            zIndex: 10,
+          }}
+        >
+          <Box className="w-14 h-14 bg-blue-500 rounded-full items-center justify-center shadow-lg border-2 border-blue-400">
+            <Ionicons name="arrow-forward" size={24} color="white" />
+          </Box>
+        </TouchableOpacity>
 
         <Box style={{ height: BOTTOM_CONTROLS_HEIGHT }} className="bg-black">
           <Box className="px-4 py-2">
