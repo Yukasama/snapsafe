@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, useMemo } from "react";
+import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from "react";
 import { getInitialChats, initialChats } from "@/config/mock-chats";
 import { getLatestEncryptedMessages } from "@/api/backend";
 import { useMessagePolling } from "@/hooks/useMessagePolling";
@@ -39,26 +39,25 @@ const ChatContext = createContext<ChatContextValue | null>(null);
 export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { username, isLoading } = useUser();
 
-  if (isLoading || !username) return;
 
   const [currentChatId, setCurrentChatId] = useState<number | null>(null);
 
-  const [chats, setChats] = useState<Chat[]>(
-    initialChats
-    .map(c => {
-      if (c.id === 1) {
-          console.log(c)
-        return {
-          ...c,
-          username: username || "hasrun",
-        } as Chat;
-      } else {
-        return c;
-      }
-    })
-    .filter(c => c.id === 1 || c.username !== username)
-    .map((c) => ({ ...c }))
-  );
+  const [chats, setChats] = useState<Chat[]>([]);
+
+  useEffect(() => {
+    if (isLoading || !username) return;
+
+    const filtered = initialChats
+      .map(c =>
+        c.id === 1
+          ? { ...c, username }
+          : c
+      )
+      .filter(c => c.id === 1 || c.username !== username)
+      .map(c => ({ ...c }));
+
+    setChats(filtered);
+  }, [isLoading, username]);
 
   const getChatById = useCallback(
     (id: number) => {
