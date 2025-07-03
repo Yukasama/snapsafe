@@ -63,7 +63,7 @@ export default function SettingsScreen() {
                 </TouchableOpacity>
               </Box>
 
-              <Box className="mb-4">
+              <Box className="mb-6">
                 <Text className="text-typography-white font-medium text-lg mb-2">Name</Text>
                 <Box className="bg-zinc-800 rounded-lg p-4 flex-row items-center">
                   <TextInput
@@ -74,6 +74,7 @@ export default function SettingsScreen() {
                     editable={false}
                   />
                 </Box>
+                <Text className="text-typography-400 text-sm mt-1">Name cannot be changed.</Text>
               </Box>
 
               <Box className="mb-6">
