@@ -141,7 +141,33 @@ export const useMockChats = (): Chat[] => {
     unreadCount: 0,
     avatar: "👩‍🦰",
     isOnline: true,
-    username: "9876",
+    username: "987654321",
+    messages: [
+      {
+        id: 1,
+        content: "Can't wait! It's going to be so much fun.",
+        timestamp: new Date("2025-07-02T09:00:00Z"),
+        isMe: false,
+        type: "text",
+        unread: false,
+      },
+      {
+        id: 2,
+        content: "I'll bring the drinks!",
+        timestamp: new Date("2025-07-02T09:05:00Z"),
+        isMe: true,
+        type: "text",
+        unread: false,
+      },
+    ],
+  },
+  {
+    id: 8,
+    name: "AFa",
+    unreadCount: 0,
+    avatar: "👩‍🦰",
+    isOnline: true,
+    username: "3141592",
     messages: [
       {
         id: 1,

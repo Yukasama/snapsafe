@@ -10,7 +10,8 @@ export default function LoginScreen() {
   const [phoneNumber, setPhoneNumber] = useState("");
 
   const handleLogin = async () => {
-    if (phoneNumber.trim().length < 5) {
+    // TODO Leerzeichen trim
+    if (phoneNumber.trim().length <= 4) {
       Alert.alert("Invalid Phone Number", "Please enter a valid phone number.");
       return;
     }
