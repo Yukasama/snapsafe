@@ -57,7 +57,7 @@ export default function Home() {
   };
 
   const ProfileDropdown = () => (
-    <Box className="absolute top-[9rem] left-4 bg-background-800 rounded-lg border border-outline-700 shadow-lg z-50">
+    <Box className="absolute top-[9rem] left-4 bg-zinc-800 rounded-lg border border-outline-700 shadow-lg z-50">
       <TouchableOpacity
         onPress={() => {
           setShowProfileDropdown(false);
@@ -126,7 +126,7 @@ export default function Home() {
       {showProfileDropdown && <ProfileDropdown />}
 
       <Box className="px-4 py-3 bg-black">
-        <Box className="bg-background-800 rounded-full px-4 py-2 flex-row items-center">
+        <Box className="bg-zinc-800 rounded-full px-4 py-2 flex-row items-center">
           <Ionicons name="search" size={20} color="#999" style={{ marginRight: 12 }} />
           <TextInput
             className="flex-1 text-typography-white text-base outline-none"

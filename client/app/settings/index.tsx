@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Box } from "@/components/ui/box";
 import { Text } from "@/components/ui/text";
-import { TouchableOpacity, TextInput, Alert, ScrollView } from "react-native";
+import { TouchableOpacity, TextInput, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
@@ -13,10 +13,23 @@ export default function SettingsScreen() {
   const [name, setName] = useState("John Doe");
   const { username, signOut } = useUser();
   const [themeMode, setThemeMode] = useState<"light" | "dark" | "system">("system");
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
   const handleSaveName = () => {
-    Alert.alert("Name Updated", "Your name has been updated successfully.");
+    // Show success message
+    setShowSuccessMessage(true);
   };
+
+  // Hide the success message after a few seconds
+  useEffect(() => {
+    if (showSuccessMessage) {
+      const timer = setTimeout(() => {
+        setShowSuccessMessage(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showSuccessMessage]);
+
 
   const handleSignOut = async () => {
     signOut();
@@ -24,7 +37,7 @@ export default function SettingsScreen() {
 
   const ThemeOption = ({ mode, label }: { mode: "light" | "dark" | "system"; label: string }) => (
     <TouchableOpacity onPress={() => setThemeMode(mode)} className="mb-3">
-      <Box className="flex-row items-center justify-between p-4 bg-background-800 rounded-lg">
+      <Box className="flex-row items-center justify-between p-4 bg-zinc-800 rounded-lg">
         <Text className="text-typography-white text-lg">{label}</Text>
         <Box
           className={`w-6 h-6 rounded-full border-2 items-center justify-center ${
@@ -70,7 +83,7 @@ export default function SettingsScreen() {
 
               <Box className="mb-4">
                 <Text className="text-typography-white font-medium text-lg mb-2">Name</Text>
-                <Box className="bg-background-800 rounded-lg p-4 flex-row items-center">
+                <Box className="bg-zinc-800 rounded-lg p-4 flex-row items-center">
                   <TextInput
                     className="flex-1 text-typography-white text-base outline-none"
                     value={name}
@@ -82,11 +95,14 @@ export default function SettingsScreen() {
                     <Text className="text-blue-500 font-medium">Save</Text>
                   </TouchableOpacity>
                 </Box>
+                 {showSuccessMessage && (
+                    <Text className="text-green-500 text-sm mt-2">Name updated successfully!</Text>
+                )}
               </Box>
 
               <Box className="mb-6">
                 <Text className="text-typography-white font-medium text-lg mb-2">Phone Number</Text>
-                <Box className="bg-background-800 rounded-lg p-4">
+                <Box className="bg-zinc-800 rounded-lg p-4">
                   <Text className="text-typography-400 text-base">{username}</Text>
                 </Box>
                 <Text className="text-typography-400 text-sm mt-1">Phone number cannot be changed</Text>
@@ -104,21 +120,21 @@ export default function SettingsScreen() {
               <Text className="text-typography-white font-bold text-xl mb-4">Other</Text>
 
               <TouchableOpacity className="mb-3">
-                <Box className="p-4 bg-background-800 rounded-lg flex-row items-center">
+                <Box className="p-4 bg-zinc-800 rounded-lg flex-row items-center">
                   <MaterialIcons name="security" size={24} color="#9CA3AF" />
                   <Text className="text-typography-white text-lg ml-3">Privacy & Security</Text>
                 </Box>
               </TouchableOpacity>
 
               <TouchableOpacity className="mb-3">
-                <Box className="p-4 bg-background-800 rounded-lg flex-row items-center">
+                <Box className="p-4 bg-zinc-800 rounded-lg flex-row items-center">
                   <Ionicons name="notifications-outline" size={24} color="#9CA3AF" />
                   <Text className="text-typography-white text-lg ml-3">Notifications</Text>
                 </Box>
               </TouchableOpacity>
 
               <TouchableOpacity className="mb-3">
-                <Box className="p-4 bg-background-800 rounded-lg flex-row items-center">
+                <Box className="p-4 bg-zinc-800 rounded-lg flex-row items-center">
                   <MaterialIcons name="storage" size={24} color="#9CA3AF" />
                   <Text className="text-typography-white text-lg ml-3">Storage & Data</Text>
                 </Box>
