@@ -40,7 +40,7 @@ const MessageBubble = ({ message, chatId }: { message: Message, chatId: number }
   }
 
   const handlePress = () => {
-    console.log("Opening photo viewer for chatId:", chatId);
+    console.debug("Opening photo viewer for chatId:", chatId);
     router.push({
       pathname: "/view-photo",
       params: {

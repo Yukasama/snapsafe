@@ -84,30 +84,27 @@ export default function ContactSelectionScreen() {
 
     try {
       console.debug("Preparing to send encrypted image...");
-      const { publicKey } = await loadOrCreateRSAKeyPair();
-      console.debug("Public Key PEM:", publicKey);
-
       if (!imageUri || typeof imageUri !== "string") throw new Error("No image URI found");
 
       const imageBase64 = await FileSystem.readAsStringAsync(imageUri, {
   encoding: 'base64',
 });
 
+      console.debug("Image Base64:", imageBase64.slice(0, 100) + "...");
       const imageBuffer = Uint8Array.from(atob(imageBase64), (c) => c.charCodeAt(0)).buffer;
 
       for (const contactId of selectedContacts) {
-        console.log(`Searching for Chat with ContactId: ${contactId}}`)
+        console.debug(`Searching for Chat with ContactId: ${contactId}}`)
         console.log(`Chats: ${chats[0].id} `)
         const recipient = chats.find((c) => c.id === contactId);
         if (!recipient) continue;
 
         let recipientUserId;
-        // TODO Hardcoded right now
         if (contactId === 1) {
           recipientUserId = username!;
         } else {
           recipientUserId = recipient.username;
-        console.log(`Username: ${recipientUserId}`)
+          console.log(`Username: ${recipientUserId}`)
         }
 
         const { publicKey: recipientKey } = await getPublicKey(recipientUserId);

@@ -9,7 +9,6 @@ export async function initCrypto(userId: string) {
   if (!cachedKeyPair) {
     console.log(`Initializing RSA keys for ${userId}...`);
     cachedKeyPair = await loadOrCreateRSAKeyPair();
-    console.log(`Prvt-Key: ${cachedKeyPair.privateKey?.dp} Publ-Key: ${cachedKeyPair.publicKey?.dp}`);
     try {
       await uploadPublicKey({ userId: userId, publicKey: cachedKeyPair.publicKey });
     } catch (error) {

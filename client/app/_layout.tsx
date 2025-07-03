@@ -50,14 +50,6 @@ const AppLayout = () => {
   }, [fontsLoaded, fontError]);
 
   useEffect(() => {
-    console.log("Auth Check:", {
-        isLoading,
-        fontsLoaded,
-        username,
-        segments,
-        isCryptoReady
-    });
-
     if (isLoading || !fontsLoaded) return;
 
     const inAuthGroup = segments[0] === 'login';
