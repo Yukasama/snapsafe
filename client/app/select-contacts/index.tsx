@@ -46,7 +46,7 @@ const ContactItem = ({
 export default function ContactSelectionScreen() {
   const { imageUri } = useLocalSearchParams();
   const [selectedContacts, setSelectedContacts] = useState<number[]>([]);
-  const { chats, getCurrentChat } = useChats();
+  const { chats, getCurrentChat, updateChat } = useChats();
   const navigation = useRouter();
   const { username } = useUser();
 
@@ -120,6 +120,23 @@ export default function ContactSelectionScreen() {
           type: "image",
           timestamp: Date.now(),
         });
+
+        if (recipient.id !== 1) {
+          updateChat(contactId, {
+            ...recipient,
+            messages: [
+              ...recipient.messages,
+              {
+                id: Date.now(),
+                content: "Photo sent",
+                type: "image",
+                isMe: true,
+                timestamp: new Date(),
+                unread: false,
+              },
+            ],
+          });
+        }
       }
 
       if (getCurrentChat()?.id) {
