@@ -66,7 +66,7 @@ const MessageBubble = ({ message }: { message: Message }) => {
           message.isMe ? "bg-blue-500 rounded-br-md" : "bg-background-800 rounded-bl-md"
         }`}
       >
-        <Text className={`text-sm ${message.isMe ? "text-white" : "text-typography-white"}`}>{message.content}</Text>
+        <Text className={`text-sm ${message.isMe ? "text-white" : "text-typography-white"}`}>{message.content as string}</Text>
         <Text className={`text-xs mt-1 ${message.isMe ? "text-blue-100" : "text-typography-400"}`}>
             {formattedDate}
         </Text>
@@ -113,20 +113,25 @@ export default function ChatScreen() {
 
   const sendMessage = async () => {
     if (message.trim()) {
-      console.log("Sending message:", message);
-      setMessage("");
-      const textBuffer = Uint8Array.from(atob(message), (c) => c.charCodeAt(0)).buffer;
-      const recipient = chat.username;
-      const { publicKey: recipientKey } = await getPublicKey(recipient);
-      const { encryptedContent: encryptedImage, encryptedAESKey, iv } = await encryptContent(textBuffer, recipientKey);
-      await sendEncryptedMessage({
-        senderId: config.username,
-        recipientId: recipient,
-        iv,
-        encryptedKey: encryptedAESKey,
-        content: encryptedImage,
-        type: "text",
-      });
+      try {
+        console.log("Sending message:", message);
+        const textBuffer = new TextEncoder().encode(message.trim()).buffer as ArrayBuffer;
+        setMessage("");
+        const recipient = chat.username;
+        const { publicKey: recipientKey } = await getPublicKey(recipient);
+        const { encryptedContent: encryptedImage, encryptedAESKey, iv } = await encryptContent(textBuffer, recipientKey);
+        await sendEncryptedMessage({
+          senderId: config.username,
+          recipientId: recipient,
+          iv,
+          encryptedKey: encryptedAESKey,
+          content: encryptedImage,
+          type: "text",
+          timestamp: Date.now(),
+        });
+      } catch (error) {
+        console.error("Error sending message:", error);
+      }
     }
   };
 

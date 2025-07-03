@@ -21,6 +21,7 @@ export interface EncryptedMessageRequest {
   encryptedKey: string; // base64 AES key encrypted with RSA
   content: string; // base64 AES-encrypted image
   type: "image" | "text";
+  timestamp: number;
 }
 
 export interface EncryptedMessageResponse {
