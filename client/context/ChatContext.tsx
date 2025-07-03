@@ -34,6 +34,12 @@ interface ChatContextValue {
   getCurrentChat: () => Chat | null;
 }
 
+const sortByLastMessage = (a: Chat, b: Chat) => {
+  const aLastMessage = a.messages?.[a.messages.length - 1]?.timestamp || new Date(0);
+  const bLastMessage = b.messages?.[b.messages.length - 1]?.timestamp || new Date(0);
+  return new Date(bLastMessage).getTime() - new Date(aLastMessage).getTime();
+}
+
 const ChatContext = createContext<ChatContextValue | null>(null);
 
 export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -54,6 +60,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
           : c
       )
       .filter(c => c.id === 1 || c.username !== username)
+      .sort(sortByLastMessage)
       .map(c => ({ ...c }));
 
     setChats(filtered);
@@ -68,7 +75,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const updateChat = useCallback((id: number, updates: Partial<Chat>) => {
     setChats((prev) =>
-      prev.map((chat) => (chat.id === id ? { ...chat, ...updates } : chat))
+      prev.map((chat) => (chat.id === id ? { ...chat, ...updates } : chat)).sort(sortByLastMessage)
     );
   }, []);
 
@@ -134,7 +141,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 ],
               }
               : chat
-          );
+          ).sort(sortByLastMessage);
         } else {
           return [
             ...prev,
@@ -156,7 +163,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 },
               ],
             },
-          ];
+          ].sort(sortByLastMessage);
         }
       });
     }

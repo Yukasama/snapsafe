@@ -14,7 +14,7 @@ export const initialChats: Chat[] = [
       {
         id: 1,
         content: "Don't forget to call the plumber",
-        timestamp: new Date("2025-07-02T12:00:00Z"),
+        timestamp: new Date("2025-07-01T12:00:00Z"),
         isMe: true,
         type: "text",
         unread: false,
@@ -22,7 +22,7 @@ export const initialChats: Chat[] = [
       {
         id: 2,
         content: "Also, remember to water the plants",
-        timestamp: new Date("2025-07-02T12:05:00Z"),
+        timestamp: new Date("2025-07-01T12:05:00Z"),
         isMe: true,
         type: "text",
         unread: false,
@@ -30,7 +30,7 @@ export const initialChats: Chat[] = [
       {
         id: 3,
         content: "Photo received",
-        timestamp: new Date("2025-07-02T12:09:00Z"),
+        timestamp: new Date("2025-07-01T12:09:00Z"),
         isMe: true,
         type: "image",
         unread: false,
