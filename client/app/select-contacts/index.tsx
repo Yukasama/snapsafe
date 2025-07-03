@@ -97,10 +97,12 @@ export default function ContactSelectionScreen() {
 
       for (const contactId of selectedContacts) {
         console.log(`Searching for Chat with ContactId: ${contactId}}`)
+        console.log(`Chats: ${chats[0].id} `)
         const recipient = chats.find((c) => c.id === contactId);
         if (!recipient) continue;
 
         const recipientUserId = recipient.username;
+        console.log(`Username: ${recipientUserId}`)
         const { publicKey: recipientKey } = await getPublicKey(recipientUserId);
 
         const { encryptedContent: encryptedImage, encryptedAESKey, iv } = await encryptContent(imageBuffer, recipientKey);
