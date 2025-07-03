@@ -3,21 +3,23 @@ import { View, TextInput, TouchableOpacity, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Text } from "@/components/ui/text";
 import { Box } from "@/components/ui/box";
-import { useUser } from "@/context/UserContext";
-import { useLocalSearchParams } from "expo-router";
+// highlight-next-line
+import { useLocalSearchParams, useRouter } from "expo-router"; // Import useRouter
 import { StatusBar } from "expo-status-bar";
 
 export default function VerificationScreen() {
-  const { signIn } = useUser();
+  // We don't need the signIn function here anymore.
+  // highlight-next-line
+  const router = useRouter();
   const [code, setCode] = useState("");
   
   const { phoneNumber } = useLocalSearchParams<{ phoneNumber: string }>();
 
   const handleVerification = async () => {
     if (code === "0000") {
-      if (phoneNumber) {
-        await signIn(phoneNumber);
-      }
+      // On successful verification, navigate to the set username screen.
+      // highlight-next-line
+      router.push("/login/setUsername");
     } else {
       Alert.alert("Invalid Code", "The code you entered is incorrect. Please try again.");
       setCode("");
