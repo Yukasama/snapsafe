@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback } from "react";
+import React, { createContext, useContext, useState, useCallback, useMemo } from "react";
 import { useMockChats } from "@/config/mock-chats";
 import { getLatestEncryptedMessages } from "@/api/backend";
 import { useMessagePolling } from "@/hooks/useMessagePolling";
@@ -40,7 +40,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const { username } = useUser();
   const initialChats = useMockChats();
 
-  const [currentChatId, setCurrentChatId] = useState<number|null>(null);
+  const [currentChatId, setCurrentChatId] = useState<number | null>(null);
 
   const [chats, setChats] = useState<Chat[]>(() =>
     initialChats.map((c) => ({ ...c }))
@@ -59,7 +59,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
   }, []);
 
-  const setCurrentChat = useCallback((id: number|null) => {
+  const setCurrentChat = useCallback((id: number | null) => {
     setCurrentChatId(id);
   }, []);
 
@@ -69,9 +69,15 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
       : chats.find(c => c.id === currentChatId) ?? null;
   }, [chats, currentChatId]);
 
+  // Memoize the context value
+  const contextValue = useMemo(
+    () => ({ chats, setChats, getChatById, updateChat, setCurrentChat, getCurrentChat }),
+    [chats, setChats, getChatById, updateChat, setCurrentChat, getCurrentChat]
+  );
+
   useMessagePolling(async () => {
     if (!username) return;
-    
+
     const messages = await getLatestEncryptedMessages(username);
     if (!messages?.length) return;
     const { privateKey } = await loadOrCreateRSAKeyPair();
@@ -100,20 +106,20 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
           return prev.map((chat) =>
             chat.username === message.from
               ? {
-                  ...chat,
-                  unreadCount: chat.unreadCount + 1,
-                  messages: [
-                    ...(chat.messages || []),
-                    {
-                      id: Date.now(),
-                      timestamp: new Date(message.timestamp),
-                      isMe: chat.username === username,
-                      type: message.type,
-                      content: decryptedMessage,
-                      unread: true,
-                    },
-                  ],
-                }
+                ...chat,
+                unreadCount: chat.unreadCount + 1,
+                messages: [
+                  ...(chat.messages || []),
+                  {
+                    id: Date.now(),
+                    timestamp: new Date(message.timestamp),
+                    isMe: chat.username === username,
+                    type: message.type,
+                    content: decryptedMessage,
+                    unread: true,
+                  },
+                ],
+              }
               : chat
           );
         } else {
@@ -144,7 +150,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
 
   return (
-    <ChatContext.Provider value={{ chats, setChats, getChatById, updateChat, setCurrentChat, getCurrentChat }}>
+    <ChatContext.Provider value={contextValue}>
       {children}
     </ChatContext.Provider>
   );
