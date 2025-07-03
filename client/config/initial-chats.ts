@@ -41,7 +41,7 @@ export const initialChats: Chat[] = [
     unreadCount: 0,
     avatar: "👩‍🎨",
     isOnline: true,
-    username: "",
+    username: "123454321",
     messages: [
       {
         id: 1,
@@ -67,7 +67,7 @@ export const initialChats: Chat[] = [
     unreadCount: 0,
     avatar: "👩‍🦳",
     isOnline: false,
-    username: "",
+    username: "23842389",
     messages: [
       {
         id: 1,
@@ -85,7 +85,7 @@ export const initialChats: Chat[] = [
     unreadCount: 0,
     avatar: "👨‍💻",
     isOnline: false,
-    username: "",
+    username: "6543456",
     messages: [
       {
         id: 1,
