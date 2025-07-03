@@ -5,15 +5,20 @@ import { TouchableOpacity, TextInput, Alert, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { useUser } from "@/context/UserContext";
 
 export default function SettingsScreen() {
   const router = useRouter();
   const [name, setName] = useState("John Doe");
-  const [phoneNumber] = useState("+1 234 567 890");
+  const { username, signOut } = useUser();
   const [themeMode, setThemeMode] = useState<"light" | "dark" | "system">("system");
 
   const handleSaveName = () => {
     Alert.alert("Name Updated", "Your name has been updated successfully.");
+  };
+
+  const handleSignOut = async () => {
+    signOut();
   };
 
   const ThemeOption = ({ mode, label }: { mode: "light" | "dark" | "system"; label: string }) => (
@@ -80,7 +85,7 @@ export default function SettingsScreen() {
               <Box className="mb-6">
                 <Text className="text-typography-white font-medium text-lg mb-2">Phone Number</Text>
                 <Box className="bg-background-800 rounded-lg p-4">
-                  <Text className="text-typography-400 text-base">{phoneNumber}</Text>
+                  <Text className="text-typography-400 text-base">{username}</Text>
                 </Box>
                 <Text className="text-typography-400 text-sm mt-1">Phone number cannot be changed</Text>
               </Box>
@@ -116,8 +121,8 @@ export default function SettingsScreen() {
                   <Text className="text-typography-white text-lg ml-3">Storage & Data</Text>
                 </Box>
               </TouchableOpacity>
-
-              <TouchableOpacity className="mb-3">
+              {}
+              <TouchableOpacity onPress={handleSignOut} className="mb-3">
                 <Box className="p-4 bg-red-500/20 rounded-lg border border-red-500/30 flex-row items-center">
                   <MaterialIcons name="logout" size={24} color="#F87171" />
                   <Text className="text-red-400 text-lg ml-3">Sign Out</Text>
