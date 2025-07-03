@@ -3,19 +3,22 @@ import { View, TextInput, TouchableOpacity, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Text } from "@/components/ui/text";
 import { Box } from "@/components/ui/box";
-import { useUser } from "@/context/UserContext";
+import { useRouter } from "expo-router";
 
 export default function LoginScreen() {
-  const { signIn } = useUser();
+  const router = useRouter();
   const [phoneNumber, setPhoneNumber] = useState("");
 
-  const handleLogin = async () => {
-    // TODO Leerzeichen trim
-    if (phoneNumber.trim().length <= 4) {
+  const handleLogin = () => {
+    const trimmedNumber = phoneNumber.trim();
+    if (trimmedNumber.length <= 4) {
       Alert.alert("Invalid Phone Number", "Please enter a valid phone number.");
       return;
     }
-    await signIn(phoneNumber.trim());
+    router.push({
+      pathname: "/login/verify",
+      params: { phoneNumber: trimmedNumber },
+    });
   };
 
   return (
@@ -24,7 +27,7 @@ export default function LoginScreen() {
         <Text className="text-white text-3xl font-bold text-center mb-8">
           Enter Your Phone Number
         </Text>
-        <Box className="bg-background-800 rounded-lg p-4 mb-6">
+        <Box className="bg-gray-800 rounded-lg p-4 mb-6">
           <TextInput
             className="text-white text-lg text-center"
             placeholder="e.g., +49 151 123456"
