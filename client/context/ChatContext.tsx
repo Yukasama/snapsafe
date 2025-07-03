@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from "react";
-import { initialChats } from "@/config/mock-chats";
+import { initialChats } from "@/config/initial-chats";
 import { getLatestEncryptedMessages } from "@/api/backend";
 import { useMessagePolling } from "@/hooks/useMessagePolling";
 import { decryptContent, decryptText } from "@/crypto/decryptContent";
