@@ -66,13 +66,7 @@ export default function SettingsScreen() {
               <Box className="mb-6">
                 <Text className="text-typography-white font-medium text-lg mb-2">Name</Text>
                 <Box className="bg-zinc-800 rounded-lg p-4 flex-row items-center">
-                  <TextInput
-                    className="flex-1 text-typography-white text-base outline-none"
-                    value={displayName || ""}
-                    placeholder="No display name set"
-                    placeholderTextColor="#666666"
-                    editable={false}
-                  />
+                  <Text className="text-typography-400 text-base">{displayName || ""}</Text>
                 </Box>
                 <Text className="text-typography-400 text-sm mt-1">Name cannot be changed.</Text>
               </Box>
