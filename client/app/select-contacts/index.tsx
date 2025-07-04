@@ -110,16 +110,6 @@ export default function ContactSelectionScreen() {
 
         const { encryptedContent: encryptedImage, encryptedAESKey, iv } = await encryptContent(imageBuffer, recipientKey);
 
-        await sendEncryptedMessage({
-          senderId: username!,
-          recipientId: recipientUserId,
-          iv,
-          encryptedKey: encryptedAESKey,
-          content: encryptedImage,
-          type: "image",
-          timestamp: Date.now(),
-        });
-
         if (recipient.id !== 1) {
           updateChat(contactId, {
             ...recipient,
@@ -136,6 +126,16 @@ export default function ContactSelectionScreen() {
             ],
           });
         }
+
+        sendEncryptedMessage({
+          senderId: username!,
+          recipientId: recipientUserId,
+          iv,
+          encryptedKey: encryptedAESKey,
+          content: encryptedImage,
+          type: "image",
+          timestamp: Date.now(),
+        });
       }
 
       if (getCurrentChat()?.id) {

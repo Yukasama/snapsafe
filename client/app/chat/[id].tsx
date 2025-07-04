@@ -161,15 +161,6 @@ export default function ChatScreen() {
         const recipient = chat.username;
         const { publicKey: recipientKey } = await getPublicKey(recipient);
         const { encryptedContent: encryptedImage, encryptedAESKey, iv } = await encryptContent(textBuffer, recipientKey);
-        await sendEncryptedMessage({
-          senderId: username!,
-          recipientId: recipient,
-          iv,
-          encryptedKey: encryptedAESKey,
-          content: encryptedImage,
-          type: "text",
-          timestamp: Date.now(),
-        });
         if (chat.id !== 1) {
           updateChat(parseInt(id as string), {
             ...chat,
@@ -184,6 +175,15 @@ export default function ChatScreen() {
                 unread: false,
               },
             ],
+          });
+          sendEncryptedMessage({
+            senderId: username!,
+            recipientId: recipient,
+            iv,
+            encryptedKey: encryptedAESKey,
+            content: encryptedImage,
+            type: "text",
+            timestamp: Date.now(),
           });
         }
       } catch (error) {
